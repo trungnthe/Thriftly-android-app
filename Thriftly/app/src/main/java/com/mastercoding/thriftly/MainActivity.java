@@ -1,6 +1,9 @@
 package com.mastercoding.thriftly;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,7 +11,31 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.mastercoding.thriftly.Authen.SignIn;
+import com.mastercoding.thriftly.Authen.SignUpActivity;
+
 public class MainActivity extends AppCompatActivity {
+
+    private Button btnSignIn;
+    private Button btnSignUp;
+
+    private void bindingView() {
+        btnSignIn = findViewById(R.id.btnSignIn);
+        btnSignUp = findViewById(R.id.btnSignUp);
+    }
+
+    private void bindingAction() {
+        btnSignIn.setOnClickListener(this::onSignIn);
+        btnSignUp.setOnClickListener(this::onSignUp);
+    }
+
+    private void onSignUp(View view) {
+        startActivity(new Intent(MainActivity.this, SignIn.class));
+    }
+
+    private void onSignIn(View view) {
+        startActivity(new Intent(MainActivity.this, SignUpActivity.class));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,5 +47,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        bindingView();
+        bindingAction();
     }
 }

@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Thriftly"
         tools:targetApi="31">
         <activity
+            android:name=".Authen.SignUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Authen.SignIn"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
