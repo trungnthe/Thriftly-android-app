@@ -11,7 +11,6 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.mastercoding.thriftly.Authen.SignIn;
 import com.mastercoding.thriftly.Authen.SignUpActivity;
 
 public class MainActivity extends AppCompatActivity {
