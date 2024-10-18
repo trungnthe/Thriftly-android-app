@@ -2,24 +2,40 @@ package com.mastercoding.thriftly.Authen;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.mastercoding.thriftly.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText fullNameInput, emailInput, passwordInput, confirmPasswordInput;
     private Button signUpButton;
     private Button signInButton;
+    private ProgressBar progressBar;
+    private FirebaseAuth mAuth;
+    private FirebaseFirestore firestore;
 
 
     @Override
@@ -43,6 +59,9 @@ public class SignUpActivity extends AppCompatActivity {
         confirmPasswordInput = findViewById(R.id.confirm_password_input);
         signUpButton = findViewById(R.id.signup_button);
         signInButton = findViewById(R.id.sign_in_button);
+        progressBar = findViewById(R.id.sign_up_pb);
+        mAuth = FirebaseAuth.getInstance();
+        firestore = FirebaseFirestore.getInstance();
     }
 
 
@@ -58,6 +77,115 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void onSignUpButtonClicked(View view) {
+        craeteAccount();
+    }
 
+    private void craeteAccount() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+        String confirmPassword = confirmPasswordInput.getText().toString().trim();
+
+        if (!validateForm(email, password, confirmPassword)) {
+            return;
+        }
+
+        showProgressBar();
+
+        createAccount(email, password);
+
+    }
+
+    private void createAccount(String email, String password) {
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Lấy UID của người dùng hiện tại
+                            String userId = mAuth.getCurrentUser().getUid();
+
+                            // Tạo dữ liệu người dùng
+                            Map<String, Object> user = new HashMap<>();
+                            user.put("email", email);
+                            user.put("username", "");
+                            user.put("phone", "");
+                            user.put("status", true);
+                            user.put("image", "1");
+
+                            // Lưu thông tin người dùng vào Firestore
+                            firestore.collection("User").document(userId).set(user)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("Firestore", "Lưu dữ liệu thành công");
+                                        Toast.makeText(SignUpActivity.this, "Lưu vào Firestore thành công", Toast.LENGTH_SHORT).show();
+                                        dismissProgressBar();  // Tắt ProgressDialog khi lưu thành công
+                                        startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
+                                        finishAffinity();
+                                    })
+                                    .addOnFailureListener(e -> {
+
+                                        Toast.makeText(SignUpActivity.this, "Lỗi khi lưu vào Firestore", Toast.LENGTH_SHORT).show();
+                                        dismissProgressBar();  // Tắt ProgressDialog khi gặp lỗi
+                                    });
+                        } else {
+                            // Hiển thị thông báo lỗi từ Firebase
+                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Tạo tài khoản thất bại.";
+                            Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                            dismissProgressBar();  // Tắt ProgressDialog khi gặp lỗi
+                        }
+                    }
+                });
+    }
+
+    private boolean validateForm(String email, String password, String confirmPassword) {
+
+        if (email.isEmpty()) {
+            emailInput.setError("Vui lòng nhập email!");
+            emailInput.requestFocus();
+            return false;
+        }
+
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            emailInput.setError("Email chưa hợp lệ!");
+            emailInput.requestFocus();
+            return false;
+        }
+
+        if (password.isEmpty()) {
+            passwordInput.setError("Vui lòng nhập mật khẩu mới!");
+            passwordInput.requestFocus();
+            return false;
+        }
+
+        if (password.length() < 6) {
+            passwordInput.setError("Mật khẩu phải hơn 6 ký tự!");
+            passwordInput.requestFocus();
+            return false;
+        }
+
+        if (confirmPassword.isEmpty()) {
+            confirmPasswordInput.setError("Vui lòng nhập lại mật khẩu mới!");
+            confirmPasswordInput.requestFocus();
+            return false;
+        }
+
+        if (!confirmPassword.equals(password)) {
+            confirmPasswordInput.setError("Không trùng với mật khẩu mới!");
+            confirmPasswordInput.requestFocus();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
+        signUpButton.setVisibility(View.GONE);
+    }
+
+    private void dismissProgressBar() {
+        progressBar.setVisibility(View.GONE);
+        signUpButton.setVisibility(View.VISIBLE);
     }
 }

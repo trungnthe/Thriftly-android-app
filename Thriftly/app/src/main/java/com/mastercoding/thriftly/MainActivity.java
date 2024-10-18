@@ -47,22 +47,10 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         bindingView();
         setSupportActionBar(toolbar);
-
-
-
         bottomNavigationView.setBackground(null);
         setupBottomNavigation();
-
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        if (auth.getCurrentUser() == null) {
-            Log.d("MainActivity", "No user is signed in");
-        }else{
-            Log.d("MainActivity", "User is signed in");
-        }
 
     }
 
@@ -78,6 +66,7 @@ public class MainActivity extends AppCompatActivity{
                 Log.d("MainActivity", "menu_subscriptions");
                 // replaceFragment(new SubscriptionFragment());
             } else if (id == R.id.menu_library) {
+                logout();
                 Log.d("MainActivity", "menu_library");
                 // replaceFragment(new LibraryFragment());
             }
