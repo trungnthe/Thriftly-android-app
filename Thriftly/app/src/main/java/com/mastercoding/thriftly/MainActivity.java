@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.HomeFragment;
+import com.mastercoding.thriftly.UI.ProfileFragment;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity{
     private Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
     private HomeFragment homeFragment;
-
+    private ProfileFragment profileFragment;
 
 
     private void bindingView(){
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity{
         drawerLayout = findViewById(R.id.drawer_layout);
         toolbar = findViewById(R.id.toolbar);
         homeFragment = new HomeFragment();
+        profileFragment = new ProfileFragment();
     }
 
     private void bindingAction(){
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity{
                 Log.d("MainActivity", "menu_subscriptions");
                 // replaceFragment(new SubscriptionFragment());
             } else if (id == R.id.menu_library) {
-                logout();
+                switchFragment(profileFragment);
                 Log.d("MainActivity", "menu_library");
                 // replaceFragment(new LibraryFragment());
             }
@@ -74,18 +76,6 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-
-
-    private void logout() {
-        // Firebase sign out
-        FirebaseAuth.getInstance().signOut();
-        // Navigate to the SignInActivity and clear back stack
-        Intent intent = new Intent(MainActivity.this, SignInActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        // Finish the current activity to prevent going back to the main screen after logout
-        finish();
-    }
 
 
     private void switchFragment(Fragment fragment) {
