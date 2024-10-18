@@ -3,8 +3,13 @@
     <style name="Base.Theme.Thriftly" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-        <item name="buttonStyle">@null</item>
+        <item name="colorPrimary">@color/lavender</item>
     </style>
 
     <style name="Theme.Thriftly" parent="Base.Theme.Thriftly" />
+    
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_in</item>
+        <item name="android:windowExitAnimation">@anim/slide_out</item>
+    </style>
 </resources>
