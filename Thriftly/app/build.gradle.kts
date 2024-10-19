@@ -40,6 +40,7 @@ dependencies {
         exclude(module = "support-annotations")
     }
 
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("androidx.appcompat:appcompat:1.3.1")
     implementation(libs.appcompat)
     implementation(libs.material)

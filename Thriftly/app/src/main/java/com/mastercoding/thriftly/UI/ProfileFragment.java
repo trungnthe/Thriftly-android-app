@@ -43,6 +43,7 @@ public class ProfileFragment extends Fragment {
     private TextInputEditText edt_username, edt_mail, edt_phone, edt_address;
     private Button btnSignOut, btnSaveProfile;
     private FirebaseUser user;
+    private ProfileImageFragment profileImageFragment;
     //private LogoutCallback logoutCallback;
 
     private void bindingView(View view) {
@@ -58,6 +59,7 @@ public class ProfileFragment extends Fragment {
         edt_address = view.findViewById(R.id.edtAddress);
         btnSignOut = view.findViewById(R.id.buttonSignOut);
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
+        profileImageFragment = new ProfileImageFragment();
     }
 
 //    public interface LogoutCallback {
@@ -69,6 +71,15 @@ public class ProfileFragment extends Fragment {
         btnSignOut.setOnClickListener(this::onSignOutClicked);
         ivEdit.setOnClickListener(this::onEditClicked);
         btnSaveProfile.setOnClickListener(this::onSaveProfileClicked);
+        ivCameraIcon.setOnClickListener(this::onUpdateAvatarClicked);
+    }
+
+    private void onUpdateAvatarClicked(View view) {
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.frame_layout, profileImageFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+
     }
 
     private void onSaveProfileClicked(View view) {
