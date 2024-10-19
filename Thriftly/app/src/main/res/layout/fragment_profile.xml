@@ -85,98 +85,93 @@
                 android:layout_marginEnd="8dp" />
         </RelativeLayout>
 
-        <!-- Website Info -->
-        <LinearLayout
+        <!-- Fullname Info -->
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtFullname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_user_circle"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:visibility="gone"
+            android:hint="Full Name"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_username"
-                android:contentDescription="Website Icon"
-                app:tint="@android:color/black" />
-
-            <TextView
-                android:id="@+id/textViewWebsite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="www.randomweb.com"
-                android:paddingStart="16dp"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
-
-        <!-- Email Info -->
-        <LinearLayout
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_username"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Username"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_email"
-                android:contentDescription="Email Icon" />
-
-            <TextView
-                android:id="@+id/textViewEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="heard_j@gmail.com"
-                android:paddingStart="16dp"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
-
-        <!-- Phone Info -->
-        <LinearLayout
+        <!-- Email -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_email"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Email"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_phone"
-                android:contentDescription="Phone Icon" />
-
-            <TextView
-                android:id="@+id/textViewPhone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="9898712132"
-                android:paddingStart="16dp"
-                android:textColor="@android:color/black" />
-        </LinearLayout>
-
-
-
-        <!-- Location Info -->
-        <LinearLayout
+        <!-- Phone -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtPhone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp">
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_phone"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Phone"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_location"
-                android:contentDescription="Location Icon" />
+        <!-- Address -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_location"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Address"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
 
-            <TextView
-                android:id="@+id/textViewLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Antigua"
-                android:paddingStart="16dp"
-                android:textColor="@android:color/black"/>
-        </LinearLayout>
-
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/btnSaveProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Save"
+            android:visibility="gone" />
     </LinearLayout>
+
 
     <!-- Sign Out Button -->
     <Button

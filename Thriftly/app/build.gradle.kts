@@ -33,6 +33,13 @@ android {
 }
 
 dependencies {
+
+    implementation("com.squareup.picasso:picasso:2.71828") {
+        exclude(group = "com.android.support")
+        exclude(module = "exifinterface")
+        exclude(module = "support-annotations")
+    }
+
     implementation ("androidx.appcompat:appcompat:1.3.1")
     implementation(libs.appcompat)
     implementation(libs.material)
