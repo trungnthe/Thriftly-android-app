@@ -19,13 +19,31 @@ import androidx.fragment.app.Fragment;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.R;
 import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -44,6 +62,20 @@ public class ProfileImageFragment extends Fragment {
     private String[] cameraPermission;
     private String[] storagePermission;
 
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    FirebaseUser firebaseUser;
+    FirebaseAuth firebaseAuth;
+
+    private void bindingView(View view) {
+        imgProfile = view.findViewById(R.id.imgProfile);
+        btnChangeImage = view.findViewById(R.id.btnChangeImage);
+        btnSaveImage = view.findViewById(R.id.btnSaveImage);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        storageReference = FirebaseStorage.getInstance().getReference();
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,8 +87,50 @@ public class ProfileImageFragment extends Fragment {
 
         bindingView(view);
         bindingAction();
-
+        displayProfile();
         return view;
+    }
+
+    private void displayProfile() {
+
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            if (getActivity() != null) {
+                Toast.makeText(getActivity(), "Không tìm thấy người dùng!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), SignInActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                getActivity().finish();
+            }
+            return;
+        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("User").document(user.getUid());
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+                        String image = document.getString("image");
+                        if (image != null && !image.isEmpty() && !image.equals("1")) {
+                            Picasso.get().load(image).into(imgProfile);
+                        } else {
+                            imgProfile.setImageResource(R.drawable.ic_noimage); // Thiết lập ảnh mặc định nếu không có ảnh
+                        }
+                    } else {
+                        Log.d("FirebaseUserId", "User ID: " + user.getUid());
+                        Toast.makeText(getActivity(), "Failed to load user information!", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown error occurred!";
+                    Toast.makeText(getActivity(), "Error loading data: " + errorMessage, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     private void bindingAction() {
@@ -65,8 +139,53 @@ public class ProfileImageFragment extends Fragment {
     }
 
     private void saveImage(View view) {
-        // Xử lý lưu ảnh đại diện nếu cần
+
+        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        String filepathname = "avatars/" + firebaseUser.getUid() + ".png";
+        StorageReference storageReference1 = storageReference.child(filepathname);
+
+        storageReference1.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!uriTask.isSuccessful());
+
+                final Uri downloadUri = uriTask.getResult();
+                if (uriTask.isSuccessful()) {
+
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("image", downloadUri.toString());
+
+                    FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                    firestore.collection("User").document(firebaseUser.getUid())
+                            .update(hashMap)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    // Toast hoặc hiển thị thông báo thành công
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Toast hoặc hiển thị thông báo thất bại
+                                }
+                            });
+                } else {
+                    // Toast hoặc thông báo nếu không lấy được URL của ảnh
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Toast hoặc hiển thị thông báo lỗi khi upload ảnh
+            }
+        });
+
     }
+
+
 
     private void changeImage(View view) {
         CharSequence[] options = {"Camera", "Gallery"};
@@ -188,9 +307,5 @@ public class ProfileImageFragment extends Fragment {
         }
     }
 
-    private void bindingView(View view) {
-        imgProfile = view.findViewById(R.id.imgProfile);
-        btnChangeImage = view.findViewById(R.id.btnChangeImage);
-        btnSaveImage = view.findViewById(R.id.btnSaveImage);
-    }
+
 }
