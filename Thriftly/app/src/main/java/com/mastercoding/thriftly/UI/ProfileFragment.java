@@ -223,7 +223,6 @@ public class ProfileFragment extends Fragment {
 
     private void displayProfile() {
 
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
             if (getActivity() != null) {
