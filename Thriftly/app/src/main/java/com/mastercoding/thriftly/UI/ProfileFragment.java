@@ -27,6 +27,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.mastercoding.thriftly.Authen.ChangePasswordActivity;
 import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.MainActivity;
 import com.mastercoding.thriftly.R;
@@ -44,6 +45,7 @@ public class ProfileFragment extends Fragment {
     private Button btnSignOut, btnSaveProfile;
     private FirebaseUser user;
     private ProfileImageFragment profileImageFragment;
+    private Button btnChangePassword;
     //private LogoutCallback logoutCallback;
 
     private void bindingView(View view) {
@@ -60,6 +62,7 @@ public class ProfileFragment extends Fragment {
         btnSignOut = view.findViewById(R.id.buttonSignOut);
         btnSaveProfile = view.findViewById(R.id.btnSaveProfile);
         profileImageFragment = new ProfileImageFragment();
+        btnChangePassword = view.findViewById(R.id.buttonChangePass);
     }
 
 //    public interface LogoutCallback {
@@ -72,6 +75,12 @@ public class ProfileFragment extends Fragment {
         ivEdit.setOnClickListener(this::onEditClicked);
         btnSaveProfile.setOnClickListener(this::onSaveProfileClicked);
         ivCameraIcon.setOnClickListener(this::onUpdateAvatarClicked);
+        btnChangePassword.setOnClickListener(this::onChangePasswordClicked);
+    }
+
+    private void onChangePasswordClicked(View view) {
+        Intent intent = new Intent(getActivity(), ChangePasswordActivity.class);
+        startActivity(intent);
     }
 
     private void onUpdateAvatarClicked(View view) {

@@ -5,11 +5,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.HomeFragment;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity{
     private void bindingAction(){
 
     }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

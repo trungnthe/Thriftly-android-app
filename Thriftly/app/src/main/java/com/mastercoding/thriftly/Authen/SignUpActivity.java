@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.mastercoding.thriftly.R;
 
@@ -102,31 +103,43 @@ public class SignUpActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Lấy UID của người dùng hiện tại
-                            String userId = mAuth.getCurrentUser().getUid();
 
-                            // Tạo dữ liệu người dùng
-                            Map<String, Object> user = new HashMap<>();
-                            user.put("email", email);
-                            user.put("username", "");
-                            user.put("phone", "");
-                            user.put("status", true);
-                            user.put("image", "1");
+                            FirebaseUser user = mAuth.getCurrentUser();
 
-                            // Lưu thông tin người dùng vào Firestore
-                            firestore.collection("User").document(userId).set(user)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Log.d("Firestore", "Lưu dữ liệu thành công");
-                                        Toast.makeText(SignUpActivity.this, "Lưu vào Firestore thành công", Toast.LENGTH_SHORT).show();
-                                        dismissProgressBar();  // Tắt ProgressDialog khi lưu thành công
-                                        startActivity(new Intent(SignUpActivity.this, SignInActivity.class));
-                                        finishAffinity();
-                                    })
-                                    .addOnFailureListener(e -> {
+                            if (user != null) {
+                                user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(SignUpActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
+                                            String userId = user.getUid();
+                                            Map<String, Object> userData = new HashMap<>();
+                                            userData.put("email", email);
+                                            userData.put("username", "");
+                                            userData.put("phone", "");
+                                            userData.put("status", true);
+                                            userData.put("image", "1");
 
-                                        Toast.makeText(SignUpActivity.this, "Lỗi khi lưu vào Firestore", Toast.LENGTH_SHORT).show();
-                                        dismissProgressBar();  // Tắt ProgressDialog khi gặp lỗi
-                                    });
+                                            firestore.collection("User").document(userId).set(userData)
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Log.d("Firestore", "Lưu dữ liệu thành công");
+                                                        dismissProgressBar();
+                                                        FirebaseAuth.getInstance().signOut();
+                                                        startActivity(new Intent(SignUpActivity.this, EmailVerifyActivity.class));
+                                                        finishAffinity();
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        dismissProgressBar();
+                                                    });
+
+                                        } else {
+                                            // Gặp lỗi khi gửi email xác nhận
+                                            Toast.makeText(SignUpActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+                            }
+
                         } else {
                             // Hiển thị thông báo lỗi từ Firebase
                             String errorMessage = task.getException() != null ? task.getException().getMessage() : "Tạo tài khoản thất bại.";
@@ -136,6 +149,7 @@ public class SignUpActivity extends AppCompatActivity {
                     }
                 });
     }
+
 
     private boolean validateForm(String email, String password, String confirmPassword) {
 
