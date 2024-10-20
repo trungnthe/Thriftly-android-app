@@ -26,6 +26,9 @@
         android:theme="@style/Theme.Thriftly"
         tools:targetApi="31">
         <activity
+            android:name=".Authen.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
             android:name=".Authen.EmailVerifyActivity"
             android:exported="false" />
         <activity
