@@ -81,7 +81,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void onForgotPasswordClicked(View view) {
-        
+        startActivity(new Intent(SignInActivity.this, ForgotPasswordActivity.class));
     }
 
     private void onSignInButtonClicked(View view) {
