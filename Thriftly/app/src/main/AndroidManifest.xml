@@ -2,6 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <meta-data
+        android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,6 +20,13 @@
         android:theme="@style/Theme.Thriftly"
         tools:targetApi="31">
         <activity
+            android:name=".UI.EditProductActivity"
+            android:exported="false" />
+        <!-- AddProductActivity -->
+        <activity
+            android:name=".UI.AddProductActivity"
+            android:exported="true" /> <!-- WelcomeActivity -->
+        <activity
             android:name=".Authen.WelcomeActivity"
             android:exported="true">
             <intent-filter>
@@ -20,18 +34,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity> <!-- SignInActivity -->
         <activity
             android:name=".Authen.SignInActivity"
-            android:exported="false" />
+            android:exported="false" /> <!-- SignUpActivity -->
         <activity
             android:name=".Authen.SignUpActivity"
-            android:exported="false" />
+            android:exported="false" /> <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true" />
     </application>
 
 </manifest>

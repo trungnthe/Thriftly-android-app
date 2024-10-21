@@ -3,45 +3,39 @@ package com.mastercoding.thriftly;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.widget.Button;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
-import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mastercoding.thriftly.Authen.SignInActivity;
-import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.HomeFragment;
+import com.mastercoding.thriftly.UI.AddProductActivity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
-    private DrawerLayout drawerLayout;
+    private FloatingActionButton fab;
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
-    private ActionBarDrawerToggle toggle;
     private HomeFragment homeFragment;
 
-
-
-    private void bindingView(){
+    private void bindingView() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        drawerLayout = findViewById(R.id.drawer_layout);
         toolbar = findViewById(R.id.toolbar);
         homeFragment = new HomeFragment();
+        fab = findViewById(R.id.fab);  // Tham chiếu FAB
     }
 
-    private void bindingAction(){
-
+    private void bindingAction() {
+        // Sự kiện khi nhấn vào FAB để chuyển sang AddProductActivity
+        fab.setOnClickListener(view -> {
+            Intent intent = new Intent(MainActivity.this, AddProductActivity.class);
+            startActivity(intent);
+        });
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,21 +43,24 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         bindingView();
+        bindingAction();  // Thêm sự kiện vào FAB
+        if (getIntent().hasExtra("showFragment")) {
+            String fragmentToShow = getIntent().getStringExtra("showFragment");
+            if ("homeFragment".equals(fragmentToShow)) {
+                switchFragment(new HomeFragment());
+            }
+        }
         setSupportActionBar(toolbar);
-
-
 
         bottomNavigationView.setBackground(null);
         setupBottomNavigation();
 
-
         FirebaseAuth auth = FirebaseAuth.getInstance();
         if (auth.getCurrentUser() == null) {
             Log.d("MainActivity", "No user is signed in");
-        }else{
+        } else {
             Log.d("MainActivity", "User is signed in");
         }
-
     }
 
     private void setupBottomNavigation() {
@@ -73,31 +70,25 @@ public class MainActivity extends AppCompatActivity{
                 switchFragment(homeFragment);
             } else if (id == R.id.menu_shorts) {
                 Log.d("MainActivity", "menu_shorts");
-                // replaceFragment(new ShortsFragment());
+                // Thêm fragment Shorts
             } else if (id == R.id.menu_subscriptions) {
                 Log.d("MainActivity", "menu_subscriptions");
-                // replaceFragment(new SubscriptionFragment());
+                // Thêm fragment Subscription
             } else if (id == R.id.menu_library) {
+                logout();
                 Log.d("MainActivity", "menu_library");
-                // replaceFragment(new LibraryFragment());
             }
             return true;
         });
     }
 
-
-
     private void logout() {
-        // Firebase sign out
         FirebaseAuth.getInstance().signOut();
-        // Navigate to the SignInActivity and clear back stack
         Intent intent = new Intent(MainActivity.this, SignInActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-        // Finish the current activity to prevent going back to the main screen after logout
         finish();
     }
-
 
     private void switchFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
@@ -105,5 +96,4 @@ public class MainActivity extends AppCompatActivity{
                 .addToBackStack(null)
                 .commit();
     }
-
 }
