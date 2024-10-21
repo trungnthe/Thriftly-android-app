@@ -85,7 +85,7 @@ public class EditProductActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Toast.makeText(EditProductActivity.this, "Lỗi khi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
+//commit dung xoa Activity di nua nhe
 
     // Cập nhật hành động cho các nút hoặc tương tác khác
     private void bindingAction() {
