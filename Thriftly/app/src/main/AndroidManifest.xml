@@ -38,6 +38,7 @@
             android:name=".Authen.ChangePasswordActivity"
             android:exported="false" />
 
+        <activity
             android:name=".UI.EditProductActivity"
             android:exported="false" />
         <!-- AddProductActivity -->

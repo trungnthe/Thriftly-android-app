@@ -84,7 +84,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         private void onEditClick(View view) {
             Intent intent = new Intent(itemView.getContext(), EditProductActivity.class);
             intent.putExtra("product_id", product.getId());
-
             itemView.getContext().startActivity(intent);
         }
 
