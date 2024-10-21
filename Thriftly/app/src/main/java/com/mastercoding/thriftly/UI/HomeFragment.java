@@ -37,13 +37,11 @@ public class HomeFragment extends Fragment {
     private ProductAdapter productAdapter;
     private List<Product> productList;
     private FirebaseFirestore db;
-    private TextView emptyMessage; // TextView hiển thị khi không có sản phẩm
-
-    // Khởi tạo view và kết nối với UI
+    private TextView emptyMessage;
     private void bindingView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_products);
         mAuth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();  // Firestore database
+        db = FirebaseFirestore.getInstance();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
@@ -69,6 +67,7 @@ public class HomeFragment extends Fragment {
 
         loadProducts();
 
+
         return view;
     }
 
@@ -81,13 +80,12 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
             getActivity().finish();
         } else {
-            // Kiểm tra xác minh email
             if (!user.isEmailVerified()) {
                 mAuth.signOut();
                 Intent intent = new Intent(getActivity(), SignInActivity.class);
                 startActivity(intent);
                 getActivity().finish();
-                Toast.makeText(getActivity(), "Vui lòng xác minh email trước khi tiếp tục", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Please verify your email before proceeding", Toast.LENGTH_LONG).show();
             }
         }
     }
