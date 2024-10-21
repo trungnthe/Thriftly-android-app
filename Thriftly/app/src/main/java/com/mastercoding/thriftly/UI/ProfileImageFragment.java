@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -164,6 +165,8 @@ public class ProfileImageFragment extends Fragment {
                                 @Override
                                 public void onSuccess(Void aVoid) {
                                     // Toast hoặc hiển thị thông báo thành công
+                                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                                    fragmentManager.popBackStack();
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
