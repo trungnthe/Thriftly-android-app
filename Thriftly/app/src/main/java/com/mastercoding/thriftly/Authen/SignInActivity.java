@@ -98,7 +98,6 @@ public class SignInActivity extends AppCompatActivity {
         signInButton = findViewById(R.id.sign_in_button);
         signUpButton = findViewById(R.id.sign_up_button);
         forgotPassword = findViewById(R.id.forgot_password);
-        ibFacebook = findViewById(R.id.facebook_button);
         ibGoogle = findViewById(R.id.google_button);
         progressBar = findViewById(R.id.sign_in_pb);
         mAuth = FirebaseAuth.getInstance();
@@ -109,7 +108,6 @@ public class SignInActivity extends AppCompatActivity {
         signInButton.setOnClickListener(this::onSignInButtonClicked);
         forgotPassword.setOnClickListener(this::onForgotPasswordClicked);
         signUpButton.setOnClickListener(this::onSignUpButtonClicked);
-        ibFacebook.setOnClickListener(this::onFacebookButtonClicked);
         ibGoogle.setOnClickListener(this::onGoogleButtonClicked);
     }
 
@@ -164,10 +162,6 @@ public class SignInActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-
-    private void onFacebookButtonClicked(View view) {
-        
-    }
 
     private void onSignUpButtonClicked(View view) {
         startActivity(new Intent(SignInActivity.this, SignUpActivity.class));

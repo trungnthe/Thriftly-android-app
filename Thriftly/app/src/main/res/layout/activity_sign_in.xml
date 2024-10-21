@@ -115,31 +115,19 @@
         app:layout_constraintStart_toEndOf="@+id/or_text"
         app:layout_constraintTop_toTopOf="@+id/or_text" />
 
-    <ImageButton
-        android:id="@+id/facebook_button"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_marginStart="130dp"
-        android:background="@drawable/circular_button_background"
-        android:contentDescription="Facebook Login"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_facebook"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/or_text" />
 
     <ImageButton
         android:id="@+id/google_button"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginEnd="130dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/circular_button_background"
         android:contentDescription="Google Login"
         android:scaleType="centerInside"
-
         android:src="@drawable/ic_google"
-        app:layout_constraintBottom_toBottomOf="@+id/facebook_button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/facebook_button" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/or_text" />
 
     <ProgressBar
         android:id="@+id/sign_in_pb"
