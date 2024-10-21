@@ -1,0 +1,199 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#FDF9F9"
+    android:gravity="top">
+
+    <!-- Avatar (Profile Image) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+
+        tools:ignore="UselessParent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageViewAvatar"
+            android:layout_width="170dp"
+            android:layout_height="170dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_noimage"
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="5dp" />
+
+        <ImageView
+            android:id="@+id/imageViewCameraIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="97dp"
+            android:layout_marginBottom="12dp"
+            android:background="@drawable/ic_camera"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
+
+
+    <!-- Fullname -->
+    <TextView
+        android:id="@+id/textViewFullname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Victoria Heard"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center_horizontal"
+        android:paddingTop="8dp" />
+
+
+    <!-- Personal Information Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/white"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textViewPersonalInfoTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Information"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- Edit Button -->
+            <ImageView
+                android:id="@+id/imageViewEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="8dp"
+                android:src="@drawable/ic_edit_profile" />
+        </RelativeLayout>
+
+        <!-- Fullname Info -->
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtFullname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_user_circle"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Full Name"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            app:autoSizeTextType="uniform" />
+
+        <!-- Username -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_username"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Username"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
+
+        <!-- Email -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_email"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Email"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
+
+        <!-- Phone -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_phone"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Phone"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
+
+        <!-- Address -->
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edtAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoSizeMaxTextSize="100sp"
+            android:autoSizeMinTextSize="15sp"
+            android:autoSizeStepGranularity="15sp"
+            android:drawableStart="@drawable/ic_location"
+            android:drawablePadding="10dp"
+            android:enabled="false"
+            android:hint="Address"
+            android:textColor="@color/black"
+            app:autoSizeTextType="uniform" />
+
+        <!-- Save Button -->
+        <Button
+            android:id="@+id/btnSaveProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Save"
+            android:visibility="gone" />
+    </LinearLayout>
+
+
+    <!-- Sign Out Button -->
+    <Button
+        android:id="@+id/buttonChangePass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Change Password"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@color/white"/>
+
+    <!-- Sign Out Button -->
+    <Button
+        android:id="@+id/buttonSignOut"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign Out"
+        android:layout_marginTop="5dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:textColor="@color/white"/>
+
+</LinearLayout>
