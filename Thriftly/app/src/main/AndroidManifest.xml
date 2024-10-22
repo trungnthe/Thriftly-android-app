@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -15,9 +14,11 @@
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+
     <meta-data
         android:name="com.google.android.gms.version"
         android:value="@integer/google_play_services_version" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -29,6 +30,9 @@
         android:theme="@style/Theme.Thriftly"
         tools:targetApi="31">
         <activity
+            android:name=".UI.ManageProductsActivity"
+            android:exported="false" />
+        <activity
             android:name=".Authen.ForgotPasswordActivity"
             android:exported="false" />
         <activity
@@ -37,15 +41,12 @@
         <activity
             android:name=".Authen.ChangePasswordActivity"
             android:exported="false" />
-
         <activity
             android:name=".UI.EditProductActivity"
-            android:exported="false" />
-        <!-- AddProductActivity -->
+            android:exported="false" /> <!-- AddProductActivity -->
         <activity
             android:name=".UI.AddProductActivity"
             android:exported="true" /> <!-- WelcomeActivity -->
-
         <activity
             android:name=".Authen.WelcomeActivity"
             android:exported="true">
