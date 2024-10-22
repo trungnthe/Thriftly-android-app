@@ -9,9 +9,8 @@
 
     <item
         android:id="@+id/menu_shorts"
-        android:title="Search"
-        android:icon="@drawable/ic_search"
-        />
+        android:icon="@drawable/ic_edit_profile"
+        android:title="Posted" />
 
     <item
         android:id="@+id/menu_subscriptions"

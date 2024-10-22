@@ -16,6 +16,8 @@ import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.UI.HomeFragment;
 import com.mastercoding.thriftly.UI.ProfileFragment;
 import com.mastercoding.thriftly.UI.AddProductActivity;
+import com.mastercoding.thriftly.UI.ShoppingSiteFragement;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -26,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
     private Toolbar toolbar;
     private HomeFragment homeFragment;
+
+    private ShoppingSiteFragement shoppingSiteFragement;
     private ProfileFragment profileFragment;
 
 
@@ -33,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         toolbar = findViewById(R.id.toolbar);
         homeFragment = new HomeFragment();
+        shoppingSiteFragement = new ShoppingSiteFragement();
 
         profileFragment = new ProfileFragment();
 
@@ -79,10 +84,10 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.menu_home) {
-                switchFragment(homeFragment);
+                switchFragment(shoppingSiteFragement);
             } else if (id == R.id.menu_shorts) {
                 Log.d("MainActivity", "menu_shorts");
-                // Thêm fragment Shorts
+                switchFragment(homeFragment);
             } else if (id == R.id.menu_subscriptions) {
                 Log.d("MainActivity", "menu_subscriptions");
                 // Thêm fragment Subscription

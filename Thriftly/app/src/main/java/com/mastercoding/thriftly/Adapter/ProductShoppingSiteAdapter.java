@@ -16,44 +16,36 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.EditProductActivity;
+import com.mastercoding.thriftly.UI.ProductDetailActivity;
 import com.squareup.picasso.Picasso;
 
-import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
+public class ProductShoppingSiteAdapter extends RecyclerView.Adapter<ProductShoppingSiteAdapter.VH> {
 
     private List<Product> data;
     private String currentUserId;
 
-    public ProductAdapter(List<Product> data, String currentUserId) {
+    public ProductShoppingSiteAdapter(List<Product> data, String currentUserId) {
         this.data = data;
         this.currentUserId = currentUserId;
     }
 
     @NonNull
     @Override
-    public ProductAdapter.VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ProductShoppingSiteAdapter.VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View v = inflater.inflate(R.layout.product_item, parent, false);
+        View v = inflater.inflate(R.layout.product_item_shopping, parent, false);
         return new VH(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ProductAdapter.VH holder, int position) {
+    public void onBindViewHolder(@NonNull ProductShoppingSiteAdapter.VH holder, int position) {
         Product product = data.get(position);
         holder.setData(product);
-        holder.tvProductStatus.setText(product.getStatus());
-
         // Chỉ hiện nút Edit nếu người dùng hiện tại là người tạo ra sản phẩm
-        if (product.getUserId().equals(currentUserId)) {
-            holder.btnEdit.setVisibility(View.VISIBLE);
-        } else {
-            holder.btnEdit.setVisibility(View.GONE); // Ẩn nút Edit nếu người dùng không phải là người tạo sản phẩm
-        }
-    }
 
+    }
 
     @Override
     public int getItemCount() {
@@ -64,31 +56,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
         private TextView tvProductName;
         private TextView tvProductPrice;
-        private TextView tvProductStatus;
         private ImageView ivProductImage;
-        private TextView tvProductDescription;
-        private TextView tvCategoryName;
-        private Button btnEdit;
         private Product product;
 
         private void bindingView() {
             // Gán các view
             tvProductName = itemView.findViewById(R.id.product_name);
             tvProductPrice = itemView.findViewById(R.id.product_price);
-            tvProductStatus = itemView.findViewById(R.id.product_status);
             ivProductImage = itemView.findViewById(R.id.product_image);
-            tvProductDescription = itemView.findViewById(R.id.product_description);
-            tvCategoryName = itemView.findViewById(R.id.product_category);
-            btnEdit = itemView.findViewById(R.id.btnEdit);
-        }
-
-        private void bindingAction() {
-            btnEdit.setOnClickListener(this::onEditClick);
         }
 
         private void onEditClick(View view) {
             Intent intent = new Intent(itemView.getContext(), EditProductActivity.class);
             intent.putExtra("product_id", product.getId());
+
             itemView.getContext().startActivity(intent);
         }
 
@@ -97,20 +78,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         public VH(@NonNull View itemView) {
             super(itemView);
             bindingView();
-            bindingAction();
         }
 
         public void setData(Product product) {
             this.product = product;
-
-            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
-            String formattedPrice = numberFormat.format(Long.parseLong(product.getPrice()));
-
             tvProductName.setText(product.getName());
-            tvProductPrice.setText("Price: " + formattedPrice + " VND");
-            tvProductDescription.setText(product.getDescription());
-            tvCategoryName.setText(product.getCategory());
+            tvProductPrice.setText("₫ " + product.getPrice());
 
+            // Kiểm tra URL ảnh sản phẩm và hiển thị nếu có
             if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
                 Picasso.get()
                         .load(product.getImageUrl())
@@ -122,6 +97,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
                 ivProductImage.setImageResource(R.drawable.ic_logoapp); // Hiển thị ảnh placeholder mặc định
             }
 
+            // Thiết lập sự kiện click cho ảnh sản phẩm để mở chi tiết sản phẩm
+            ivProductImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Kiểm tra các giá trị trước khi truyền vào Intent
+                    Intent intent = new Intent(itemView.getContext(), ProductDetailActivity.class);
+
+                    // Truyền dữ liệu sản phẩm qua Intent
+                    intent.putExtra("product_name", product.getName() != null ? product.getName() : "Không có tên");
+                    intent.putExtra("product_price", product.getPrice() != null ? product.getPrice() : "0");
+                    intent.putExtra("product_image", product.getImageUrl() != null ? product.getImageUrl() : "");
+                    intent.putExtra("product_description", product.getDescription() != null ? product.getDescription() : "Không có mô tả");
+                    intent.putExtra("product_category", product.getCategory() != null ? product.getCategory() : "Không có danh mục");
+
+                    // Chuyển sang màn hình chi tiết sản phẩm
+                    itemView.getContext().startActivity(intent);
+                }
+            });
         }
+
+
     }
 }

@@ -29,6 +29,7 @@ public class EditProductActivity extends AppCompatActivity {
     private EditText productCategoryInput;
     private EditText productDescriptionInput;
     private Button saveButton;
+    private Button deleteButton;
     private FirebaseFirestore firestore;
 
     // Liên kết các view trong layout với mã nguồn
@@ -38,6 +39,7 @@ public class EditProductActivity extends AppCompatActivity {
         productCategoryInput = findViewById(R.id.product_category_input);
         productDescriptionInput = findViewById(R.id.product_description_input);
         saveButton = findViewById(R.id.save_button);
+        deleteButton = findViewById(R.id.delete_button);
         firestore = FirebaseFirestore.getInstance();
     }
     private void loadProduct(){
@@ -48,7 +50,6 @@ public class EditProductActivity extends AppCompatActivity {
             Toast.makeText(this, "Không tìm thấy ID sản phẩm", Toast.LENGTH_SHORT).show();
             return;
         }
-
         firestore.collection("Products").document(productId)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -85,12 +86,34 @@ public class EditProductActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Toast.makeText(EditProductActivity.this, "Lỗi khi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
-
+//commit dung xoa Activity di nua nhe
 
     // Cập nhật hành động cho các nút hoặc tương tác khác
     private void bindingAction() {
         saveButton.setOnClickListener(this::saveProduct);
+        deleteButton.setOnClickListener(this::deleteProduct);
 
+
+    }
+
+    private void deleteProduct(View view) {
+        String productId = getIntent().getStringExtra("product_id");
+
+        if (productId != null) {
+            firestore.collection("Products").document(productId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(EditProductActivity.this, "Sản phẩm đã được xóa", Toast.LENGTH_SHORT).show();
+                        // Chuyển về MainActivity sau khi xóa thành công
+                        Intent intent = new Intent(EditProductActivity.this, MainActivity.class);
+                        intent.putExtra("showFragment", "homeFragment");  // Hiển thị HomeFragment sau khi xóa
+                        startActivity(intent);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(EditProductActivity.this, "Lỗi khi xóa sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        } else {
+            Toast.makeText(this, "Không tìm thấy sản phẩm để xóa", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Hàm lưu dữ liệu sản phẩm sau khi cập nhật
@@ -105,7 +128,6 @@ public class EditProductActivity extends AppCompatActivity {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
-
         // Nhận productId từ Intent để cập nhật sản phẩm trong Firestore
         String productId = getIntent().getStringExtra("product_id"); // Giả sử product_id đã được truyền qua Intent
 
@@ -133,7 +155,6 @@ public class EditProductActivity extends AppCompatActivity {
             Toast.makeText(this, "Không tìm thấy thông tin sản phẩm để cập nhật", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -2,27 +2,23 @@ package com.mastercoding.thriftly.UI;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.mastercoding.thriftly.Adapter.ProductAdapter;
+import com.mastercoding.thriftly.Adapter.ProductShoppingSiteAdapter;
 import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
@@ -30,26 +26,25 @@ import com.mastercoding.thriftly.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeFragment extends Fragment {
+public class ShoppingSiteFragement extends Fragment {
 
     private FirebaseAuth mAuth;
     private RecyclerView recyclerView;
-    private ProductAdapter productAdapter;
+    private ProductShoppingSiteAdapter productAdapter;
     private List<Product> productList;
     private FirebaseFirestore db;
     private TextView emptyMessage;
-
     private void bindingView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_products);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        View view = inflater.inflate(R.layout.fragment_shopping_site, container, false);
 
         bindingView(view);
         checkUserLoginAndEmailVerification();
@@ -60,15 +55,14 @@ public class HomeFragment extends Fragment {
         if (currentUserId == null) {
             Toast.makeText(getContext(), "Không tìm thấy ID người dùng", Toast.LENGTH_SHORT).show();
         }
-
         // Khởi tạo adapter một lần
         productList = new ArrayList<>();
-        productAdapter = new ProductAdapter(productList, currentUserId);
+        productAdapter = new ProductShoppingSiteAdapter(productList, currentUserId);
 
         recyclerView.setAdapter(productAdapter);
 
-        // Tải các sản phẩm của người dùng hiện tại
-        loadProducts(currentUserId);
+        loadProducts();
+
 
         return view;
     }
@@ -93,33 +87,18 @@ public class HomeFragment extends Fragment {
     }
 
     // Tải danh sách sản phẩm từ Firestore
-    private void loadProducts(String currentUserId) {
+    private void loadProducts() {
         db.collection("Products").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        productList.clear(); // Xóa danh sách trước khi thêm mới
-                        // Lọc và chỉ thêm các sản phẩm của người dùng hiện tại
-                        for (QueryDocumentSnapshot document : task.getResult()) {
+                        // Tạo một Product từ documentSnapshot
+                        for (QueryDocumentSnapshot document : task.getResult()){
                             Product product = document.toObject(Product.class);
                             product.setId(document.getId());
-
-                            // Chỉ thêm sản phẩm của người dùng hiện tại
-                            if (product.getUserId().equals(currentUserId)) {
-                                productList.add(product);
-                            }
+                            productList.add(product);
                         }
-
-                        // Thông báo nếu không có sản phẩm
-                        if (productList.isEmpty()) {
-                            Toast.makeText(getContext(), "Không có sản phẩm nào của bạn", Toast.LENGTH_SHORT).show();
-                        }
-
-                        // Cập nhật Adapter
-                        productAdapter.notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(getContext(), "Lỗi khi tải sản phẩm", Toast.LENGTH_SHORT).show();
+                    productAdapter.notifyDataSetChanged();
                     }
                 });
     }
 }
-
