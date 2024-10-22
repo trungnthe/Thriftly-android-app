@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:layout_margin="20sp"
+    android:background="@color/white"
+    tools:context=".UI.ProductDetailActivity">
+
+    <!-- Ảnh sản phẩm với shadow và bo góc -->
+    <ImageView
+        android:id="@+id/product_detail_image"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="30dp"
+        android:scaleType="centerCrop"
+        android:contentDescription="Product Image"
+        android:background="@drawable/image_background_shadow"
+        android:clipToOutline="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintHeight_percent="0.35" />
+
+    <!-- Tên sản phẩm với icon -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_name_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:hint="Tên sản phẩm"
+        android:enabled="false"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/product_detail_image">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_product_name"
+            android:paddingStart="16dp"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:focusable="false"
+            android:cursorVisible="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Giá sản phẩm với icon -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_price_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:hint="Giá sản phẩm"
+        android:enabled="false"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_name_input_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_price_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_price"
+            android:paddingStart="16dp"
+            android:textSize="16sp"
+            android:inputType="numberDecimal"
+            android:focusable="false"
+            android:cursorVisible="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Danh mục sản phẩm với icon -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_category_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:hint="Danh mục sản phẩm"
+        android:enabled="false"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_price_input_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_category_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_category"
+            android:paddingStart="16dp"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:focusable="false"
+            android:cursorVisible="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Mô tả sản phẩm với icon -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_description_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:hint="Mô tả sản phẩm"
+        android:enabled="false"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_category_input_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_description_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_description"
+            android:paddingStart="16dp"
+            android:textSize="16sp"
+            android:inputType="text"
+            android:focusable="false"
+            android:cursorVisible="false" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
