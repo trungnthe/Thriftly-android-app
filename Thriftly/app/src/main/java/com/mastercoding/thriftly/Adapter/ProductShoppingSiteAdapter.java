@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.EditProductActivity;
+import com.mastercoding.thriftly.UI.ProductDetailActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -84,6 +85,7 @@ public class ProductShoppingSiteAdapter extends RecyclerView.Adapter<ProductShop
             tvProductName.setText(product.getName());
             tvProductPrice.setText("₫ " + product.getPrice());
 
+            // Kiểm tra URL ảnh sản phẩm và hiển thị nếu có
             if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
                 Picasso.get()
                         .load(product.getImageUrl())
@@ -95,6 +97,26 @@ public class ProductShoppingSiteAdapter extends RecyclerView.Adapter<ProductShop
                 ivProductImage.setImageResource(R.drawable.ic_logoapp); // Hiển thị ảnh placeholder mặc định
             }
 
+            // Thiết lập sự kiện click cho ảnh sản phẩm để mở chi tiết sản phẩm
+            ivProductImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Kiểm tra các giá trị trước khi truyền vào Intent
+                    Intent intent = new Intent(itemView.getContext(), ProductDetailActivity.class);
+
+                    // Truyền dữ liệu sản phẩm qua Intent
+                    intent.putExtra("product_name", product.getName() != null ? product.getName() : "Không có tên");
+                    intent.putExtra("product_price", product.getPrice() != null ? product.getPrice() : "0");
+                    intent.putExtra("product_image", product.getImageUrl() != null ? product.getImageUrl() : "");
+                    intent.putExtra("product_description", product.getDescription() != null ? product.getDescription() : "Không có mô tả");
+                    intent.putExtra("product_category", product.getCategory() != null ? product.getCategory() : "Không có danh mục");
+
+                    // Chuyển sang màn hình chi tiết sản phẩm
+                    itemView.getContext().startActivity(intent);
+                }
+            });
         }
+
+
     }
 }

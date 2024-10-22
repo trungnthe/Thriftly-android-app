@@ -38,6 +38,7 @@ public class HomeFragment extends Fragment {
     private List<Product> productList;
     private FirebaseFirestore db;
     private TextView emptyMessage;
+
     private void bindingView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_products);
         mAuth = FirebaseAuth.getInstance();
@@ -59,14 +60,15 @@ public class HomeFragment extends Fragment {
         if (currentUserId == null) {
             Toast.makeText(getContext(), "Không tìm thấy ID người dùng", Toast.LENGTH_SHORT).show();
         }
+
         // Khởi tạo adapter một lần
         productList = new ArrayList<>();
         productAdapter = new ProductAdapter(productList, currentUserId);
 
         recyclerView.setAdapter(productAdapter);
 
-        loadProducts();
-
+        // Tải các sản phẩm của người dùng hiện tại
+        loadProducts(currentUserId);
 
         return view;
     }
@@ -91,18 +93,33 @@ public class HomeFragment extends Fragment {
     }
 
     // Tải danh sách sản phẩm từ Firestore
-    private void loadProducts() {
+    private void loadProducts(String currentUserId) {
         db.collection("Products").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Tạo một Product từ documentSnapshot
-                        for (QueryDocumentSnapshot document : task.getResult()){
+                        productList.clear(); // Xóa danh sách trước khi thêm mới
+                        // Lọc và chỉ thêm các sản phẩm của người dùng hiện tại
+                        for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
                             product.setId(document.getId());
-                            productList.add(product);
+
+                            // Chỉ thêm sản phẩm của người dùng hiện tại
+                            if (product.getUserId().equals(currentUserId)) {
+                                productList.add(product);
+                            }
                         }
-                    productAdapter.notifyDataSetChanged();
+
+                        // Thông báo nếu không có sản phẩm
+                        if (productList.isEmpty()) {
+                            Toast.makeText(getContext(), "Không có sản phẩm nào của bạn", Toast.LENGTH_SHORT).show();
+                        }
+
+                        // Cập nhật Adapter
+                        productAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getContext(), "Lỗi khi tải sản phẩm", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 }
+

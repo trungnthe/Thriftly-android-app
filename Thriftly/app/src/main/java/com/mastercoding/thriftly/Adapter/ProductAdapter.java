@@ -44,6 +44,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     public void onBindViewHolder(@NonNull ProductAdapter.VH holder, int position) {
         Product product = data.get(position);
         holder.setData(product);
+        holder.tvProductStatus.setText(product.getStatus());
+
         // Chỉ hiện nút Edit nếu người dùng hiện tại là người tạo ra sản phẩm
         if (product.getUserId().equals(currentUserId)) {
             holder.btnEdit.setVisibility(View.VISIBLE);
@@ -51,6 +53,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
             holder.btnEdit.setVisibility(View.GONE); // Ẩn nút Edit nếu người dùng không phải là người tạo sản phẩm
         }
     }
+
 
     @Override
     public int getItemCount() {
