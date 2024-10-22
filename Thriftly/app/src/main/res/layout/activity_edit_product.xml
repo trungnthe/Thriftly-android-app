@@ -117,7 +117,7 @@
         android:layout_marginBottom="32dp"
         android:text="Lưu"
         android:textColor="@android:color/white"
-        android:backgroundTint="@color/xanh"
+        android:backgroundTint="@color/colorPrimary"
         android:padding="12dp"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"

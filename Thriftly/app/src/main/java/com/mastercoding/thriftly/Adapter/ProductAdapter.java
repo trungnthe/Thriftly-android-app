@@ -18,7 +18,9 @@ import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.EditProductActivity;
 import com.squareup.picasso.Picasso;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
@@ -84,7 +86,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         private void onEditClick(View view) {
             Intent intent = new Intent(itemView.getContext(), EditProductActivity.class);
             intent.putExtra("product_id", product.getId());
-
             itemView.getContext().startActivity(intent);
         }
 
@@ -98,8 +99,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
         public void setData(Product product) {
             this.product = product;
+
+            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+            String formattedPrice = numberFormat.format(Long.parseLong(product.getPrice()));
+
             tvProductName.setText(product.getName());
-            tvProductPrice.setText("Price: " + product.getPrice() +" VND");
+            tvProductPrice.setText("Price: " + formattedPrice + " VND");
             tvProductDescription.setText(product.getDescription());
             tvCategoryName.setText(product.getCategory());
 
