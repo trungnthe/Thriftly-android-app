@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Slider/Carousel (can be a ViewPager2, ImageSlider, or similar) -->
+
+    <!-- Search bar overlay -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="211dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/slider"
+        android:elevation="8dp"
+        android:padding="10dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+
+            android:id="@+id/product_name_input"
+            android:layout_width="300dp"
+            android:layout_height="33dp"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="23dp"
+            android:background="#F4ECEC"
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:textSize="15sp"
+
+            android:drawableStart="@drawable/ic_search"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>
