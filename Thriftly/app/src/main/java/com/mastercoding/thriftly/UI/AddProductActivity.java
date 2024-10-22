@@ -138,6 +138,7 @@ public class AddProductActivity extends AppCompatActivity {
         product.put("imageUrl", imageUrl); // Thêm URL ảnh
         product.put("userId", userId); // Thêm ID người dùng
         product.put("timestamp", Timestamp.now()); // Thêm ngày đăng
+        product.put("status", "Available");
 
         // Thêm thông tin sản phẩm vào Firestore
         firestore.collection("Products")
