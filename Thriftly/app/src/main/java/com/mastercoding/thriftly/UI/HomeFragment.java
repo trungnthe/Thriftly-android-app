@@ -37,13 +37,14 @@ public class HomeFragment extends Fragment {
     private ProductAdapter productAdapter;
     private List<Product> productList;
     private FirebaseFirestore db;
-    private TextView emptyMessage;
+    private TextView emptyMessage, emptyTextView;
 
     private void bindingView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_products);
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        emptyTextView = view.findViewById(R.id.emptyTextView);
     }
 
     @Override
@@ -94,10 +95,12 @@ public class HomeFragment extends Fragment {
 
     // Tải danh sách sản phẩm từ Firestore
     private void loadProducts(String currentUserId) {
+
         db.collection("Products").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         productList.clear(); // Xóa danh sách trước khi thêm mới
+
                         // Lọc và chỉ thêm các sản phẩm của người dùng hiện tại
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
@@ -109,9 +112,12 @@ public class HomeFragment extends Fragment {
                             }
                         }
 
-                        // Thông báo nếu không có sản phẩm
+                        // Kiểm tra nếu danh sách sản phẩm rỗng
                         if (productList.isEmpty()) {
-                            Toast.makeText(getContext(), "Không có sản phẩm nào của bạn", Toast.LENGTH_SHORT).show();
+                            emptyTextView.setVisibility(View.VISIBLE); // Hiển thị TextView thông báo
+                            emptyTextView.setText("Không có sản phẩm nào của bạn.");
+                        } else {
+                            emptyTextView.setVisibility(View.GONE); // Ẩn TextView nếu có sản phẩm
                         }
 
                         // Cập nhật Adapter
@@ -120,6 +126,6 @@ public class HomeFragment extends Fragment {
                         Toast.makeText(getContext(), "Lỗi khi tải sản phẩm", Toast.LENGTH_SHORT).show();
                     }
                 });
-    }
+}
 }
 
