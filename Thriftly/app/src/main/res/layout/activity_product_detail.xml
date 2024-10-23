@@ -1,155 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_margin="20sp"
+    android:background="@color/white"
+    android:padding="16dp"
+    tools:context=".UI.ProductDetailActivity">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="20sp"
-        android:background="@color/white"
-        android:padding="16dp"
-        tools:context=".UI.ProductDetailActivity">
+    <!-- Ảnh sản phẩm -->
+    <ImageView
+        android:id="@+id/product_detail_image"
+        android:layout_width="178dp"
+        android:layout_height="198dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/image_background_shadow"
+        android:clipToOutline="true"
+        android:contentDescription="Product Image"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_percent="0.35"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_percent="0.7" />
 
-        <!-- Ảnh sản phẩm với shadow và bo góc -->
-        <ImageView
-            android:id="@+id/product_detail_image"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="30dp"
-            android:background="@drawable/image_background_shadow"
-            android:clipToOutline="true"
-            android:contentDescription="Product Image"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHeight_percent="0.35"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.7" />
+    <!-- Tên sản phẩm -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_name_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:enabled="false"
+        android:hint="Tên sản phẩm"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/product_detail_image">
 
-        <!-- Tên sản phẩm với icon -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/product_name_input_layout"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_name_input"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:enabled="false"
-            android:hint="Tên sản phẩm"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/product_detail_image">
+            android:cursorVisible="false"
+            android:drawableStart="@drawable/ic_product_name"
+            android:focusable="false"
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/product_name_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:cursorVisible="false"
-                android:drawableStart="@drawable/ic_product_name"
-                android:focusable="false"
-                android:inputType="text"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <!-- Giá sản phẩm -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_price_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:enabled="false"
+        android:hint="Giá sản phẩm"
+        app:endIconMode="clear_text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_name_input_layout">
 
-        <!-- Giá sản phẩm với icon -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/product_price_input_layout"
-            android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_price_input"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:enabled="false"
-            android:hint="Giá sản phẩm"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_name_input_layout">
+            android:cursorVisible="false"
+            android:drawableStart="@drawable/ic_price"
+            android:focusable="false"
+            android:inputType="numberDecimal"
+            android:paddingStart="16dp"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/product_price_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:cursorVisible="false"
-                android:drawableStart="@drawable/ic_price"
-                android:focusable="false"
-                android:inputType="numberDecimal"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <!-- Danh mục sản phẩm -->
 
-        <!-- Danh mục sản phẩm với icon -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/product_category_input_layout"
-            android:layout_width="0dp"
+    <!-- Mô tả sản phẩm -->
+
+    <!-- Nút Contact -->
+
+    <Spinner
+        android:id="@+id/product_category_spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_price_input_layout" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_description_input_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:enabled="false"
+        android:hint="Mô tả sản phẩm"
+        app:endIconMode="clear_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_category_spinner"
+        app:layout_constraintVertical_bias="0.052">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_description_input"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:enabled="false"
-            android:hint="Danh mục sản phẩm"
-            app:endIconMode="clear_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_price_input_layout">
+            android:cursorVisible="false"
+            android:drawableStart="@drawable/ic_description"
+            android:focusable="false"
+            android:inputType="text"
+            android:paddingStart="16dp"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/product_category_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:cursorVisible="false"
-                android:drawableStart="@drawable/ic_category"
-                android:focusable="false"
-                android:inputType="text"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <Button
+        android:id="@+id/contact_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Contact"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_description_input_layout" />
 
-        <!-- Mô tả sản phẩm với icon -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/product_description_input_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
-            android:enabled="false"
-            android:hint="Mô tả sản phẩm"
-            app:endIconMode="clear_text"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/product_category_input_layout"
-            app:layout_constraintVertical_bias="0.5">
+    <!-- Nút Buy -->
+    <Button
+        android:id="@+id/buy_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Buy"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/contact_button" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/product_description_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:cursorVisible="false"
-                android:drawableStart="@drawable/ic_description"
-                android:focusable="false"
-                android:inputType="text"
-                android:paddingStart="16dp"
-                android:textSize="16sp" />
-        </com.google.android.material.textfield.TextInputLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="20dp" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="20dp" />
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="335dp" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_end="335dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
-
+</androidx.constraintlayout.widget.ConstraintLayout>
