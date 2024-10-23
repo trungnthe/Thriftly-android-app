@@ -27,7 +27,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private TextView productName, productPrice, productDescription;
     private ImageView productImage;
-    private Spinner productCategory;
+    private TextView productCategory;
 
     private void bindingView() {
         // Đảm bảo các ID tương ứng với ID trong layout XML
@@ -35,106 +35,83 @@ public class ProductDetailActivity extends AppCompatActivity {
         productPrice = findViewById(R.id.product_price_input);
         productImage = findViewById(R.id.product_detail_image);
         productDescription = findViewById(R.id.product_description_input);
-        productCategory = findViewById(R.id.product_category_spinner);
+        productCategory = findViewById(R.id.product_category);
     }
 
     private void bindingAction() {
         Intent intent = getIntent();
-
-        // Nhận các giá trị từ Intent
-        String name = intent.getStringExtra("product_name");
-        String price = intent.getStringExtra("product_price");
-        String imageUrl = intent.getStringExtra("product_image");
-        String description = intent.getStringExtra("product_description");
-        String categoryId = intent.getStringExtra("product_category_id"); // Lấy categoryId từ Intent
-
-        // Kiểm tra và hiển thị dữ liệu
-        if (name != null) {
-            productName.setText(name);
-        } else {
-            productName.setText("Tên sản phẩm không xác định");
-        }
-
-        if (price != null) {
-            productPrice.setText("₫ " + price);
-        } else {
-            productPrice.setText("Giá không xác định");
-        }
-
-        if (description != null) {
-            productDescription.setText(description);
-        } else {
-            productDescription.setText("Mô tả không có sẵn");
-        }
-        if (categoryId != null) {
-            // Gọi phương thức thiết lập Spinner và truyền categoryId
-            setupCategorySpinner(categoryId);
-        } else {
-            Log.e("BindingAction", "categoryId không hợp lệ, không thể thiết lập Spinner.");
-        }
-
-        // Hiển thị ảnh sản phẩm nếu có
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            Picasso.get().load(imageUrl).placeholder(R.drawable.ic_logoapp).into(productImage);
-        } else {
-            productImage.setImageResource(R.drawable.ic_logoapp);  // Hiển thị ảnh mặc định nếu không có ảnh
-        }
-
-        // Gọi phương thức thiết lập Spinner và truyền categoryId
-        setupCategorySpinner(categoryId);
+        String productId = intent.getStringExtra("product_id");
+        Log.d("Product", "ID được chọn từ Intent: " + productId);
+        loadProduct(productId);
     }
 
-    private void setupCategorySpinner(String selectedCategoryId) {
-        List<String> categoryNames = new ArrayList<>();
-        List<String> categoryIds = new ArrayList<>();
+    private void loadProduct(String productId) {
 
-        Log.d("SetupSpinner", "ID được chọn từ Intent: " + selectedCategoryId);
+        if (productId == null || productId.isEmpty()) {
+            Toast.makeText(this, "ID sản phẩm không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Tải danh mục từ Firestore
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
-        firestore.collection("Categories").get()
+        firestore.collection("Products").document(productId).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        for (DocumentSnapshot document : task.getResult()) {
-                            String categoryName = document.getString("categoryName");
-                            String categoryId = document.getId();
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String name = document.getString("name");
+                            String price = document.getString("price");
+                            String description = document.getString("description");
+                            String imageUrl = document.getString("imageUrl");
+                            String categoryId = document.getString("categoryId");
 
-                            Log.d("Firestore", "Tên danh mục: " + categoryName + ", ID: " + categoryId);
+                            // Hiển thị thông tin lên giao diện
+                            productName.setText(name != null ? name : "Tên sản phẩm không xác định");
+                            productPrice.setText(price != null ? "₫ " + price : "Giá không xác định");
+                            productDescription.setText(description != null ? description : "Mô tả không có sẵn");
 
-                            if (categoryName != null) {
-                                categoryNames.add(categoryName);
-                                categoryIds.add(categoryId);
+                            // Hiển thị ảnh sản phẩm
+                            if (imageUrl != null && !imageUrl.isEmpty()) {
+                                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_logoapp).into(productImage);
                             } else {
-                                Log.e("Firestore", "Tên danh mục không hợp lệ: " + categoryId);
+                                productImage.setImageResource(R.drawable.ic_logoapp);
                             }
-                        }
 
-                        // Log danh sách categoryIds
-                        Log.d("SetupSpinner", "Danh sách categoryIds: " + categoryIds.toString());
-
-                        // Kiểm tra xem danh sách categoryNames có dữ liệu không
-                        if (!categoryNames.isEmpty()) {
-                            ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryNames);
-                            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                            productCategory.setAdapter(adapter);
-
-                            // Cài đặt lựa chọn ban đầu cho Spinner
-                            if (selectedCategoryId != null) {
-                                int position = categoryIds.indexOf(selectedCategoryId);
-                                Log.d("SetupSpinner", "Tìm vị trí cho ID: " + selectedCategoryId + ", Kết quả: " + position);
-                                if (position != -1) {
-                                    productCategory.setSelection(position);
-                                } else {
-                                    Log.e("SetupSpinner", "Không tìm thấy vị trí cho ID đã chọn: " + selectedCategoryId);
-                                }
+                            if (categoryId != null) {
+                                loadCategory(categoryId);
+                            } else {
+                                productCategory.setText("Danh mục không xác định");
                             }
                         } else {
-                            Toast.makeText(this, "Không tìm thấy danh mục nào.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
                         }
-
-                        productCategory.setEnabled(false);
                     } else {
-                        Toast.makeText(this, "Không thể tải danh mục", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Lỗi khi tải sản phẩm", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Lỗi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void loadCategory(String categoryId) {
+        if (categoryId == null || categoryId.isEmpty()) {
+            productCategory.setText("Danh mục không xác định");
+            return;
+        }
+
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("Categories").document(categoryId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            String categoryName = document.getString("categoryName");
+                            productCategory.setText(categoryName != null ? categoryName : "Danh mục không xác định");
+                        } else {
+                            productCategory.setText("Không tìm thấy danh mục");
+                        }
+                    } else {
+                        Toast.makeText(this, "Lỗi khi tải danh mục", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(e -> {

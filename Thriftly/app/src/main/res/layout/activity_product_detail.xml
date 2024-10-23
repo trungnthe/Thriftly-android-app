@@ -77,21 +77,30 @@
             android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Danh mục sản phẩm -->
-
-    <!-- Mô tả sản phẩm -->
-
-    <!-- Nút Contact -->
-
-    <Spinner
-        android:id="@+id/product_category_spinner"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/product_category_input_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
+        android:enabled="false"
+        android:hint="Danh mục"
+        app:endIconMode="clear_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_price_input_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/product_price_input_layout">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/product_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:cursorVisible="false"
+            android:drawableStart="@drawable/ic_category"
+            android:focusable="false"
+            android:inputType="numberDecimal"
+            android:paddingStart="16dp"
+            android:textSize="16sp" />
+    </com.google.android.material.textfield.TextInputLayout>
+
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/product_description_input_layout"
@@ -101,12 +110,9 @@
         android:enabled="false"
         android:hint="Mô tả sản phẩm"
         app:endIconMode="clear_text"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/product_category_spinner"
-        app:layout_constraintVertical_bias="0.052">
+        app:layout_constraintTop_toBottomOf="@+id/product_category_input_layout">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/product_description_input"
