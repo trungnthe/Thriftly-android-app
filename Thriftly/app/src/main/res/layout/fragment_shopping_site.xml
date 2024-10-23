@@ -36,7 +36,10 @@
             android:layout_marginEnd="23dp"
             android:background="#F4ECEC"
             android:inputType="text"
-            android:textSize="15sp" />
+            android:textSize="15sp"
+            android:hint="Search Product"
+            android:focusable="true"
+            android:focusableInTouchMode="true"/>
 
         <ImageButton
             android:id="@+id/btnSearch"
@@ -114,6 +117,38 @@
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/category_recycler_view" />
+
+    <ImageButton
+        android:id="@+id/btnSortPrice"
+        android:layout_width="62dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="256dp"
+        android:layout_marginBottom="520dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="Search Button"
+        android:scaleType="centerInside"
+        android:src="@drawable/a"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.064"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/btnSortName"
+        android:layout_width="55dp"
+        android:layout_height="44dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="60dp"
+        android:layout_marginBottom="520dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="Search Button"
+        android:scaleType="centerInside"
+        android:src="@drawable/nameupdown"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.945"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_products"
