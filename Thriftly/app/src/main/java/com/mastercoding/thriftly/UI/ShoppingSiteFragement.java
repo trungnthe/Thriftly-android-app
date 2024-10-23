@@ -2,20 +2,27 @@ package com.mastercoding.thriftly.UI;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.view.menu.MenuView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.mastercoding.thriftly.Adapter.CategoryAdapter;
 import com.mastercoding.thriftly.Adapter.ProductAdapter;
@@ -39,6 +46,10 @@ public class ShoppingSiteFragement extends Fragment {
     private List<Category> categoryList;
     private FirebaseFirestore db;
     private TextView emptyPost;
+    private TextView emptyMessage;
+    private ImageButton btnSearch;
+    private TextInputEditText txtSearch;
+
 
     private void bindingView(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_products);
@@ -48,7 +59,11 @@ public class ShoppingSiteFragement extends Fragment {
         db = FirebaseFirestore.getInstance();
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         categoryRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        txtSearch = view.findViewById(R.id.txtSearch);
+        btnSearch = view.findViewById(R.id.btnSearch);
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,6 +87,14 @@ public class ShoppingSiteFragement extends Fragment {
         loadProducts();
         loadCategory();
 
+        btnSearch.setOnClickListener(v -> {
+            String searchText = txtSearch.getText().toString().trim();
+            if (!searchText.isEmpty()) {
+                loadProducts(searchText);
+            }else{
+                loadProducts();
+            }
+        });
 
         return view;
     }
@@ -174,4 +197,29 @@ public class ShoppingSiteFragement extends Fragment {
                     }
                 });
     }
+
+    private void loadProducts(String searchQuery) {
+        // Sử dụng để tìm kiếm tất cả sản phẩm và lọc ở client side (tìm kiếm chứa từ khóa)
+        db.collection("Products")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        productList.clear(); // Xóa danh sách hiện tại để đảm bảo không trùng lặp
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            product.setId(document.getId());
+                            // Kiểm tra xem tên có chứa từ khóa không (case-insensitive)
+                            if (product.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                                productList.add(product);
+                            }
+                        }
+                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+                    } else {
+                        // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo lỗi)
+                        Log.d("SearchResultsActivity", "Error getting documents: ", task.getException());
+                    }
+                });
+
+}
+
 }
