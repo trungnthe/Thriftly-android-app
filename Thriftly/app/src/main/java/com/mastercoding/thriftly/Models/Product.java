@@ -13,6 +13,7 @@ public class Product {
     private String userId;
     private Timestamp timestamp;
     private String status;
+    private String categoryId;
 
     // Constructor không tham số
     public Product() {
@@ -20,7 +21,7 @@ public class Product {
     }
 
     // Constructor đầy đủ tham số
-    public Product(String id, String category, String description, String imageUrl, String name, String price, String userId, Timestamp timestamp, String status) {
+    public Product(String id, String category, String description, String imageUrl, String name, String price, String userId, Timestamp timestamp, String status,String CategoryId) {
         this.id = id;
         this.category = category;
         this.description = description;
@@ -30,6 +31,7 @@ public class Product {
         this.userId = userId;
         this.timestamp = timestamp;
         this.status = status;
+        this.categoryId=CategoryId;
 
     }
 
@@ -104,5 +106,11 @@ public class Product {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    public String getCategoryId() {
+        return categoryId;
+    }
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
     }
 }
