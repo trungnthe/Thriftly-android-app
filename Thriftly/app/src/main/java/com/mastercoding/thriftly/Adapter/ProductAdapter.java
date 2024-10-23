@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.EditProductActivity;
@@ -109,8 +110,29 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
             tvProductName.setText(product.getName());
             tvProductPrice.setText("Price: " + formattedPrice + " VND");
             tvProductDescription.setText(product.getDescription());
-            tvCategoryName.setText(product.getCategory());
 
+            // Kiểm tra và tải categoryName từ Firestore nếu chỉ có categoryId
+            if (product.getCategoryId() != null) {
+                FirebaseFirestore.getInstance().collection("Categories")
+                        .document(product.getCategoryId())
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String categoryName = documentSnapshot.getString("categoryName");
+                                tvCategoryName.setText(categoryName);  // Hiển thị tên danh mục
+                            } else {
+                                tvCategoryName.setText("Unknown category");  // Hiển thị khi không tìm thấy danh mục
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            tvCategoryName.setText("Unknown category");  // Xử lý lỗi
+                            Log.d("ProductAdapter", "Error getting category: " + e.getMessage());
+                        });
+            } else {
+                tvCategoryName.setText("Unknown category");
+            }
+
+            // Hiển thị ảnh sản phẩm
             if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
                 Picasso.get()
                         .load(product.getImageUrl())
@@ -121,7 +143,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
                 Log.d("ProductAdapter", "Image URL is null or empty");
                 ivProductImage.setImageResource(R.drawable.ic_logoapp); // Hiển thị ảnh placeholder mặc định
             }
-
         }
+
     }
 }

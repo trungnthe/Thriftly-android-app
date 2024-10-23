@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,14 +22,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.mastercoding.thriftly.MainActivity;
 import com.mastercoding.thriftly.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EditProductActivity extends AppCompatActivity {
 
     private EditText productNameInput;
     private EditText productPriceInput;
-    private EditText productCategoryInput;
+    private Spinner productCategorySpinner;
+
     private EditText productDescriptionInput;
     private Button saveButton;
     private Button deleteButton;
@@ -36,20 +42,20 @@ public class EditProductActivity extends AppCompatActivity {
     private void bindingView() {
         productNameInput = findViewById(R.id.product_name_input);
         productPriceInput = findViewById(R.id.product_price_input);
-        productCategoryInput = findViewById(R.id.product_category_input);
+        productCategorySpinner = findViewById(R.id.product_category_spinner);
         productDescriptionInput = findViewById(R.id.product_description_input);
         saveButton = findViewById(R.id.save_button);
         deleteButton = findViewById(R.id.delete_button);
         firestore = FirebaseFirestore.getInstance();
     }
-    private void loadProduct(){
+    // Tải dữ liệu sản phẩm từ Firestore
+    private void loadProduct() {
         String productId = getIntent().getStringExtra("product_id");
-        Log.d("productId", productId);
-
         if (productId == null) {
             Toast.makeText(this, "Không tìm thấy ID sản phẩm", Toast.LENGTH_SHORT).show();
             return;
         }
+
         firestore.collection("Products").document(productId)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -58,7 +64,7 @@ public class EditProductActivity extends AppCompatActivity {
                         if (document.exists()) {
                             String name = document.getString("name");
                             String description = document.getString("description");
-                            String category = document.getString("category");
+                            String categoryId = document.getString("categoryId");  // Lấy categoryId thay vì categoryName
                             String price = document.getString("price");
 
                             if (name != null) {
@@ -67,12 +73,12 @@ public class EditProductActivity extends AppCompatActivity {
                             if (description != null) {
                                 productDescriptionInput.setText(description);
                             }
-                            if (category != null) {
-                                productCategoryInput.setText(category);
-                            }
                             if (price != null) {
                                 productPriceInput.setText(price);
                             }
+
+                            // Lưu categoryId để sử dụng khi cài đặt Spinner
+                            getIntent().putExtra("product_category_id", categoryId);
                         } else {
                             Toast.makeText(EditProductActivity.this, "Sản phẩm không tồn tại", Toast.LENGTH_SHORT).show();
                         }
@@ -86,6 +92,7 @@ public class EditProductActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Toast.makeText(EditProductActivity.this, "Lỗi khi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
 //commit dung xoa Activity di nua nhe
 
     // Cập nhật hành động cho các nút hoặc tương tác khác
@@ -120,31 +127,34 @@ public class EditProductActivity extends AppCompatActivity {
     private void saveProduct(View view) {
         String updatedName = productNameInput.getText().toString().trim();
         String updatedPrice = productPriceInput.getText().toString().trim();
-        String updatedCategory = productCategoryInput.getText().toString().trim();
         String updatedDescription = productDescriptionInput.getText().toString().trim();
 
+        // Lấy `categoryId` từ Tag của Spinner
+        String updatedCategoryId = (String) productCategorySpinner.getTag();
+
         // Kiểm tra dữ liệu đầu vào
-        if (updatedName.isEmpty() || updatedPrice.isEmpty() || updatedCategory.isEmpty() || updatedDescription.isEmpty()) {
+        if (updatedName.isEmpty() || updatedPrice.isEmpty() || updatedCategoryId == null || updatedDescription.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
+
         // Nhận productId từ Intent để cập nhật sản phẩm trong Firestore
-        String productId = getIntent().getStringExtra("product_id"); // Giả sử product_id đã được truyền qua Intent
+        String productId = getIntent().getStringExtra("product_id");
 
         if (productId != null) {
             // Tạo một bản đồ chứa các trường cần cập nhật
             Map<String, Object> updatedProduct = new HashMap<>();
             updatedProduct.put("name", updatedName);
             updatedProduct.put("price", updatedPrice);
-            updatedProduct.put("category", updatedCategory);
+            updatedProduct.put("categoryId", updatedCategoryId);  // Lưu `categoryId` thay vì `categoryName`
             updatedProduct.put("description", updatedDescription);
 
-            // Cập nhật sản phẩm trực tiếp sử dụng productId
+            // Cập nhật sản phẩm trong Firestore
             firestore.collection("Products").document(productId).update(updatedProduct)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(EditProductActivity.this, "Thông tin sản phẩm đã được cập nhật", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(EditProductActivity.this, MainActivity.class);
-                        intent.putExtra("showFragment", "homeFragment");  // Truyền thông tin để hiển thị HomeFragment
+                        intent.putExtra("showFragment", "homeFragment");  // Quay về trang chủ
                         startActivity(intent);
                         finish();
                     })
@@ -155,6 +165,7 @@ public class EditProductActivity extends AppCompatActivity {
             Toast.makeText(this, "Không tìm thấy thông tin sản phẩm để cập nhật", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,5 +181,57 @@ public class EditProductActivity extends AppCompatActivity {
         bindingView();
         bindingAction();
         loadProduct();
+        setupCategorySpinner();
     }
+    private void setupCategorySpinner() {
+        firestore.collection("Categories").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<String> categoryNames = new ArrayList<>();
+                        List<String> categoryIds = new ArrayList<>();
+
+                        for (DocumentSnapshot document : task.getResult()) {
+                            String categoryName = document.getString("categoryName");
+                            String categoryId = document.getId();  // Lấy ID của danh mục
+
+                            categoryNames.add(categoryName);  // Thêm tên vào Spinner
+                            categoryIds.add(categoryId);      // Lưu ID để sử dụng khi cần
+                        }
+
+                        // Tạo ArrayAdapter cho Spinner
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryNames);
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        productCategorySpinner.setAdapter(adapter);
+
+                        // Lấy product_category_id từ Intent và cài đặt Spinner
+                        String currentCategoryId = getIntent().getStringExtra("product_category_id");
+                        if (currentCategoryId != null) {
+                            int position = categoryIds.indexOf(currentCategoryId);
+                            if (position != -1) {
+                                productCategorySpinner.setSelection(position);
+                            }
+                        }
+
+                        // Lưu categoryId tương ứng với categoryName được chọn
+                        productCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                String selectedCategoryId = categoryIds.get(position);  // Lấy categoryId của danh mục được chọn
+                                productCategorySpinner.setTag(selectedCategoryId);  // Lưu categoryId vào Tag để sử dụng sau
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+                                // Không làm gì nếu không chọn danh mục
+                            }
+                        });
+                    } else {
+                        Toast.makeText(this, "Không thể tải danh mục", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+
+
+
 }
