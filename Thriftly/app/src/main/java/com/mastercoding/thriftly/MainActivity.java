@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private FloatingActionButton fab;
     private BottomNavigationView bottomNavigationView;
-    private Toolbar toolbar;
+    //private Toolbar toolbar;
     private HomeFragment homeFragment;
 
     private ShoppingSiteFragement shoppingSiteFragement;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindingView() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        toolbar = findViewById(R.id.toolbar);
+        //toolbar = findViewById(R.id.toolbar);
         homeFragment = new HomeFragment();
         shoppingSiteFragement = new ShoppingSiteFragement();
 
@@ -57,15 +57,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         bindingView();
         bindingAction();  // Thêm sự kiện vào FAB
-        if (getIntent().hasExtra("showFragment")) {
-            String fragmentToShow = getIntent().getStringExtra("showFragment");
-            if ("homeFragment".equals(fragmentToShow)) {
-                switchFragment(new HomeFragment());
-            }
-        }
-        setSupportActionBar(toolbar);
+//        if (getIntent().hasExtra("showFragment")) {
+//            String fragmentToShow = getIntent().getStringExtra("showFragment");
+//            if ("homeFragment".equals(fragmentToShow)) {
+//                switchFragment(new HomeFragment());
+//            }
+//        }
+        switchFragment(new ShoppingSiteFragement());
+        //setSupportActionBar(toolbar);
         bottomNavigationView.setBackground(null);
         setupBottomNavigation();
         bottomNavigationView.setBackground(null);
