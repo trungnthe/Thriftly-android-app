@@ -1,11 +1,15 @@
 package com.mastercoding.thriftly.UI;
 
+import static androidx.core.content.ContextCompat.getSystemService;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -91,8 +95,10 @@ public class ShoppingSiteFragement extends Fragment {
             String searchText = txtSearch.getText().toString().trim();
             if (!searchText.isEmpty()) {
                 loadProducts(searchText);
+                hideKeyboard();
             }else{
                 loadProducts();
+                hideKeyboard();
             }
         });
 
@@ -228,5 +234,14 @@ public class ShoppingSiteFragement extends Fragment {
                 });
 
 }
+
+    private void hideKeyboard() {
+        // Ẩn bàn phím trong Fragment
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
 }

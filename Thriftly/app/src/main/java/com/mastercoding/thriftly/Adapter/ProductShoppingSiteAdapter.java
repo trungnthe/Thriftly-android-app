@@ -105,11 +105,7 @@ public class ProductShoppingSiteAdapter extends RecyclerView.Adapter<ProductShop
                     Intent intent = new Intent(itemView.getContext(), ProductDetailActivity.class);
 
                     // Truyền dữ liệu sản phẩm qua Intent
-                    intent.putExtra("product_name", product.getName() != null ? product.getName() : "Không có tên");
-                    intent.putExtra("product_price", product.getPrice() != null ? product.getPrice() : "0");
-                    intent.putExtra("product_image", product.getImageUrl() != null ? product.getImageUrl() : "");
-                    intent.putExtra("product_description", product.getDescription() != null ? product.getDescription() : "Không có mô tả");
-                    intent.putExtra("product_category", product.getCategory() != null ? product.getCategory() : "Không có danh mục");
+                    intent.putExtra("product_id", product.getId());
 
                     // Chuyển sang màn hình chi tiết sản phẩm
                     itemView.getContext().startActivity(intent);

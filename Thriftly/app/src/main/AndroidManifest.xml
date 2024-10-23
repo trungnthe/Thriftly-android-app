@@ -52,7 +52,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- SignInActivity -->
@@ -64,6 +63,7 @@
             android:exported="false" /> <!-- MainActivity -->
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="stateHidden"
             android:exported="true" />
     </application>
 
