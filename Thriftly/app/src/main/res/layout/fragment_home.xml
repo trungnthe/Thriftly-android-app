@@ -5,6 +5,18 @@
     android:layout_height="match_parent"
     tools:context=".UI.HomeFragment">
 
+    <!-- TextView để hiển thị khi danh sách sản phẩm rỗng -->
+    <TextView
+        android:id="@+id/emptyTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Không có sản phẩm nào của bạn "
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp"
+        android:visibility="gone" />
+
     <!-- RecyclerView để hiển thị danh sách sản phẩm -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_products"
