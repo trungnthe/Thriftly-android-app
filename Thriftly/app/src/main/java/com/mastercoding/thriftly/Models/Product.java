@@ -12,6 +12,7 @@ public class Product {
     private String price;
     private String userId;
     private Timestamp timestamp;
+    private String status;
 
     // Constructor không tham số
     public Product() {
@@ -19,7 +20,7 @@ public class Product {
     }
 
     // Constructor đầy đủ tham số
-    public Product(String id, String category, String description, String imageUrl, String name, String price, String userId, Timestamp timestamp) {
+    public Product(String id, String category, String description, String imageUrl, String name, String price, String userId, Timestamp timestamp, String status) {
         this.id = id;
         this.category = category;
         this.description = description;
@@ -28,6 +29,8 @@ public class Product {
         this.price = price;
         this.userId = userId;
         this.timestamp = timestamp;
+        this.status = status;
+
     }
 
     // Getter và Setter cho tất cả các thuộc tính
@@ -93,5 +96,13 @@ public class Product {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

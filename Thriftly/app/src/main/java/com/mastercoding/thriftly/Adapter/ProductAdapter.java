@@ -18,7 +18,9 @@ import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.EditProductActivity;
 import com.squareup.picasso.Picasso;
 
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
@@ -42,6 +44,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
     public void onBindViewHolder(@NonNull ProductAdapter.VH holder, int position) {
         Product product = data.get(position);
         holder.setData(product);
+        holder.tvProductStatus.setText(product.getStatus());
+
         // Chỉ hiện nút Edit nếu người dùng hiện tại là người tạo ra sản phẩm
         if (product.getUserId().equals(currentUserId)) {
             holder.btnEdit.setVisibility(View.VISIBLE);
@@ -49,6 +53,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
             holder.btnEdit.setVisibility(View.GONE); // Ẩn nút Edit nếu người dùng không phải là người tạo sản phẩm
         }
     }
+
 
     @Override
     public int getItemCount() {
@@ -84,7 +89,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         private void onEditClick(View view) {
             Intent intent = new Intent(itemView.getContext(), EditProductActivity.class);
             intent.putExtra("product_id", product.getId());
-
             itemView.getContext().startActivity(intent);
         }
 
@@ -98,8 +102,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
 
         public void setData(Product product) {
             this.product = product;
+
+            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.US);
+            String formattedPrice = numberFormat.format(Long.parseLong(product.getPrice()));
+
             tvProductName.setText(product.getName());
-            tvProductPrice.setText("Price: " + product.getPrice() +" VND");
+            tvProductPrice.setText("Price: " + formattedPrice + " VND");
             tvProductDescription.setText(product.getDescription());
             tvCategoryName.setText(product.getCategory());
 
