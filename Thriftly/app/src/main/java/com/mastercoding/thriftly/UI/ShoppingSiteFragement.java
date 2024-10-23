@@ -213,6 +213,13 @@ public class ShoppingSiteFragement extends Fragment {
                                 productList.add(product);
                             }
                         }
+
+                        if (productList.isEmpty()) {
+                            emptyPost.setVisibility(View.VISIBLE);
+                        }else{
+                            emptyPost.setVisibility(View.GONE);
+                        }
+
                         productAdapter.notifyDataSetChanged(); // Cập nhật adapter
                     } else {
                         // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo lỗi)
