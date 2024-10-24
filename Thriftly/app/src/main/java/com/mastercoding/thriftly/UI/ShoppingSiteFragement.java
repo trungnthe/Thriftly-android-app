@@ -51,8 +51,12 @@ public class ShoppingSiteFragement extends Fragment {
     private FirebaseFirestore db;
     private TextView emptyPost;
     private TextView emptyMessage;
-    private ImageButton btnSearch;
+    private ImageButton btnSearch, btnPrice, btnName;
     private TextInputEditText txtSearch;
+
+    private boolean checkPrice;
+    private boolean checkName;
+
 
 
     private void bindingView(View view) {
@@ -65,6 +69,8 @@ public class ShoppingSiteFragement extends Fragment {
         categoryRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         txtSearch = view.findViewById(R.id.txtSearch);
         btnSearch = view.findViewById(R.id.btnSearch);
+        btnName = view.findViewById(R.id.btnSortName);
+        btnPrice = view.findViewById(R.id.btnSortPrice);
     }
 
 
@@ -100,6 +106,20 @@ public class ShoppingSiteFragement extends Fragment {
                 loadProducts();
                 hideKeyboard();
             }
+        });
+
+
+
+        btnPrice.setOnClickListener(v -> {
+            String searchText = txtSearch.getText().toString().trim();
+            loadPriceUpDown(searchText, checkPrice);
+            checkPrice = !checkPrice;
+        });
+
+        btnName.setOnClickListener(v -> {
+            String searchText = txtSearch.getText().toString().trim();
+            loadNameUpDown(searchText, checkName);
+            checkName = !checkName;
         });
 
         return view;
@@ -141,7 +161,7 @@ public class ShoppingSiteFragement extends Fragment {
                             emptyPost.setVisibility(View.GONE);
                         }
 
-                    productAdapter.notifyDataSetChanged();
+                        productAdapter.notifyDataSetChanged();
                     }
                 });
     }
@@ -233,7 +253,69 @@ public class ShoppingSiteFragement extends Fragment {
                     }
                 });
 
-}
+    }
+
+
+    private void loadPriceUpDown(String searchQuery, boolean checkPrice) {
+        // Sử dụng để tìm kiếm tất cả sản phẩm và lọc ở client side (tìm kiếm chứa từ khóa)
+        Query.Direction query = checkPrice==true ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+
+        db.collection("Products")
+                .orderBy("price", query)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        productList.clear(); // Xóa danh sách hiện tại để đảm bảo không trùng lặp
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            product.setId(document.getId());
+                            // Kiểm tra xem tên có chứa từ khóa không (case-insensitive)
+                            if (product.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                                productList.add(product);
+                            }
+                        }
+                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+                    } else {
+                        // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo lỗi)
+                        Log.d("SearchResultsActivity", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
+    private void loadNameUpDown(String searchQuery, boolean checkName) {
+        // Sử dụng để tìm kiếm tất cả sản phẩm và lọc ở client side (tìm kiếm chứa từ khóa)
+        Query.Direction query = checkName==true ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+
+        db.collection("Products")
+                .orderBy("name", query)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        productList.clear(); // Xóa danh sách hiện tại để đảm bảo không trùng lặp
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            product.setId(document.getId());
+                            // Kiểm tra xem tên có chứa từ khóa không (case-insensitive)
+                            if (product.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                                productList.add(product);
+                            }
+                        }
+                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+                    } else {
+                        // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo lỗi)
+                        Log.d("SearchResultsActivity", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
+    private void hideKeyboard() {
+        // Ẩn bàn phím trong Fragment
+        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        View view = getActivity().getCurrentFocus();
+        if (view != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
 
     private void hideKeyboard() {
         // Ẩn bàn phím trong Fragment

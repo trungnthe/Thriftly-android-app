@@ -83,7 +83,7 @@ public class ProductShoppingSiteAdapter extends RecyclerView.Adapter<ProductShop
         public void setData(Product product) {
             this.product = product;
             tvProductName.setText(product.getName());
-            tvProductPrice.setText("₫ " + product.getPrice());
+            tvProductPrice.setText("Price: " + product.getPrice() + " VND" );
 
             // Kiểm tra URL ảnh sản phẩm và hiển thị nếu có
             if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
