@@ -13,6 +13,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mastercoding.thriftly.Authen.SignInActivity;
+import com.mastercoding.thriftly.Chat.ChatFragment;
 import com.mastercoding.thriftly.UI.HomeFragment;
 import com.mastercoding.thriftly.UI.ProfileFragment;
 import com.mastercoding.thriftly.UI.AddProductActivity;
@@ -31,12 +32,14 @@ public class MainActivity extends AppCompatActivity {
 
     private ShoppingSiteFragement shoppingSiteFragement;
     private ProfileFragment profileFragment;
+    ChatFragment chatFragment;
 
 
     private void bindingView() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         //toolbar = findViewById(R.id.toolbar);
         homeFragment = new HomeFragment();
+        chatFragment= new ChatFragment();
         shoppingSiteFragement = new ShoppingSiteFragement();
 
         profileFragment = new ProfileFragment();
@@ -92,11 +95,9 @@ public class MainActivity extends AppCompatActivity {
             if (id == R.id.menu_home) {
                 switchFragment(shoppingSiteFragement);
             } else if (id == R.id.menu_shorts) {
-                Log.d("MainActivity", "menu_shorts");
+
                 switchFragment(homeFragment);
-            } else if (id == R.id.menu_subscriptions) {
-                Log.d("MainActivity", "menu_subscriptions");
-                // Thêm fragment Subscription
+
             } else if (id == R.id.menu_library) {
                 switchFragment(profileFragment);
             }
