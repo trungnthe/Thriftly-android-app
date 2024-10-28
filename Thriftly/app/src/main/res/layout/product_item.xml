@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:layout_marginTop="16dp"
+
+    android:background="@drawable/custom_background">
+
+
+    <!-- ImageView để hiển thị ảnh sản phẩm -->
+
+    <!-- TextView để hiển thị tên sản phẩm -->
+
+    <ImageView
+        android:id="@+id/product_image"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="5dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/product_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Tên sản phẩm"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginLeft="15sp"
+        android:textColor="@android:color/black"
+        android:paddingStart="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+        app:layout_constraintStart_toEndOf="@id/product_image"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- TextView để hiển thị giá sản phẩm -->
+    <TextView
+        android:id="@+id/product_price"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Giá sản phẩm"
+        android:textSize="16sp"
+        android:textColor="#D0655B"
+        android:layout_marginLeft="15sp"
+
+        android:paddingStart="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+        app:layout_constraintStart_toEndOf="@id/product_image"
+        app:layout_constraintTop_toBottomOf="@id/product_name" />
+
+    <!-- TextView để hiển thị danh mục sản phẩm -->
+    <TextView
+        android:id="@+id/product_category"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Danh mục"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginLeft="15sp"
+
+        android:paddingStart="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+        app:layout_constraintStart_toEndOf="@id/product_image"
+        app:layout_constraintTop_toBottomOf="@id/product_price" />
+
+    <!-- TextView để hiển thị mô tả sản phẩm -->
+    <TextView
+        android:id="@+id/product_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Mô tả"
+        android:textSize="14sp"
+        android:layout_marginLeft="15sp"
+
+        android:textColor="@android:color/darker_gray"
+        android:paddingStart="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+        app:layout_constraintStart_toEndOf="@id/product_image"
+        app:layout_constraintTop_toBottomOf="@id/product_category" />
+
+    <!-- TextView để hiển thị trạng thái sản phẩm -->
+    <TextView
+        android:id="@+id/product_status"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Trạng thái"
+        android:layout_marginLeft="15sp"
+
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:paddingStart="4dp"
+        app:layout_constraintEnd_toStartOf="@+id/btnEdit"
+        app:layout_constraintStart_toEndOf="@id/product_image"
+        app:layout_constraintTop_toBottomOf="@id/product_description"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Button để chỉnh sửa sản phẩm -->
+    <Button
+        android:id="@+id/btnEdit"
+        android:layout_width="90dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:text="Action"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
