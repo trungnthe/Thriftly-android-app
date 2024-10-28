@@ -12,10 +12,7 @@
         android:icon="@drawable/ic_edit_profile"
         android:title="Posted" />
 
-    <item
-        android:id="@+id/menu_subscriptions"
-        android:title="History"
-        android:icon="@drawable/ic_bill" />
+
     <item
         android:id="@+id/menu_library"
         android:title="Profile"

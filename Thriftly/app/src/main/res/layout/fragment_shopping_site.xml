@@ -49,20 +49,20 @@
             android:contentDescription="Search Button"
             android:scaleType="centerInside"
             android:src="@drawable/ic_search"
-            app:layout_constraintEnd_toStartOf="@id/btnFilter"
+            app:layout_constraintEnd_toStartOf="@id/btnChat"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <!-- Filter Button -->
         <ImageButton
-            android:id="@+id/btnFilter"
+            android:id="@+id/btnChat"
             android:layout_width="38dp"
             android:layout_height="40dp"
             android:layout_marginEnd="8dp"
             android:background="?attr/selectableItemBackground"
             android:contentDescription="Filter Button"
             android:scaleType="centerInside"
-            android:src="@drawable/baseline_arrow_downward_24"
+            android:src="@drawable/ic_chat"
             app:layout_constraintEnd_toStartOf="@id/btnCart"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"/>

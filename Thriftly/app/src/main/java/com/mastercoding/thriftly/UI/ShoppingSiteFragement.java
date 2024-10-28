@@ -32,6 +32,7 @@ import com.mastercoding.thriftly.Adapter.CategoryAdapter;
 import com.mastercoding.thriftly.Adapter.ProductAdapter;
 import com.mastercoding.thriftly.Adapter.ProductShoppingSiteAdapter;
 import com.mastercoding.thriftly.Authen.SignInActivity;
+import com.mastercoding.thriftly.Chat.ChatMainActivity;
 import com.mastercoding.thriftly.Models.Category;
 import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
@@ -53,6 +54,7 @@ public class ShoppingSiteFragement extends Fragment {
     private TextView emptyMessage;
     private ImageButton btnSearch, btnPrice, btnName;
     private TextInputEditText txtSearch;
+    private  ImageButton btnChat;
 
     private boolean checkPrice;
     private boolean checkName;
@@ -71,11 +73,18 @@ public class ShoppingSiteFragement extends Fragment {
         btnSearch = view.findViewById(R.id.btnSearch);
         btnName = view.findViewById(R.id.btnSortName);
         btnPrice = view.findViewById(R.id.btnSortPrice);
+        btnChat = view.findViewById(R.id.btnChat);
     }
     private void bindingAction(){
         btnSearch.setOnClickListener(this::onSearchClick);
         btnPrice.setOnClickListener(this::onPriceClick);
         btnName.setOnClickListener(this::onNameClick);
+        btnChat.setOnClickListener(this::OnClickChat);
+    }
+
+    private void OnClickChat(View view) {
+        Intent intent = new Intent(this.getActivity(), ChatMainActivity.class);
+        startActivity(intent);
     }
 
     private void onNameClick(View view) {
@@ -100,6 +109,7 @@ public class ShoppingSiteFragement extends Fragment {
             hideKeyboard();
         }
     }
+
 
 
     @Override

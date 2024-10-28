@@ -30,6 +30,19 @@
         android:theme="@style/Theme.Thriftly"
         tools:targetApi="31">
         <activity
+            android:name=".Chat.SplashActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Chat.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Chat.SearchUserActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Chat.ChatMainActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".UI.ProductDetailActivity"
             android:exported="false" />
         <activity
@@ -65,6 +78,13 @@
             android:name=".MainActivity"
             android:windowSoftInputMode="stateHidden"
             android:exported="true" />
+        <service
+            android:name=".FCMNotificationService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
