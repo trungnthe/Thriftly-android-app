@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.1"
+agp = "8.6.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -13,7 +13,8 @@ firebaseDatabase = "21.0.0"
 firebaseStorage = "21.0.1"
 firebaseFirestore = "25.1.0"
 glide = "4.16.0"
-media3Common = "1.4.1"  # Thêm phiên bản Glide
+media3Common = "1.4.1"
+firebaseMessaging = "24.0.3"  # Thêm phiên bản Glide
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -30,6 +31,7 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 media3-common = { group = "androidx.media3", name = "media3-common", version.ref = "media3Common" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 
 
 [plugins]

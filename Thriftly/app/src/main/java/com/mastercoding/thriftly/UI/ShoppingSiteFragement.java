@@ -32,6 +32,7 @@ import com.mastercoding.thriftly.Adapter.CategoryAdapter;
 import com.mastercoding.thriftly.Adapter.ProductAdapter;
 import com.mastercoding.thriftly.Adapter.ProductShoppingSiteAdapter;
 import com.mastercoding.thriftly.Authen.SignInActivity;
+import com.mastercoding.thriftly.Chat.ChatMainActivity;
 import com.mastercoding.thriftly.Models.Category;
 import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
@@ -51,8 +52,13 @@ public class ShoppingSiteFragement extends Fragment {
     private FirebaseFirestore db;
     private TextView emptyPost;
     private TextView emptyMessage;
-    private ImageButton btnSearch;
+    private ImageButton btnSearch, btnPrice, btnName;
     private TextInputEditText txtSearch;
+    private  ImageButton btnChat;
+
+    private boolean checkPrice;
+    private boolean checkName;
+
 
 
     private void bindingView(View view) {
@@ -65,6 +71,43 @@ public class ShoppingSiteFragement extends Fragment {
         categoryRecycler.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         txtSearch = view.findViewById(R.id.txtSearch);
         btnSearch = view.findViewById(R.id.btnSearch);
+        btnName = view.findViewById(R.id.btnSortName);
+        btnPrice = view.findViewById(R.id.btnSortPrice);
+        btnChat = view.findViewById(R.id.btnChat);
+    }
+    private void bindingAction(){
+        btnSearch.setOnClickListener(this::onSearchClick);
+        btnPrice.setOnClickListener(this::onPriceClick);
+        btnName.setOnClickListener(this::onNameClick);
+        btnChat.setOnClickListener(this::OnClickChat);
+    }
+
+    private void OnClickChat(View view) {
+        Intent intent = new Intent(this.getActivity(), ChatMainActivity.class);
+        startActivity(intent);
+    }
+
+    private void onNameClick(View view) {
+        String searchText = txtSearch.getText().toString().trim();
+        loadNameUpDown(searchText, checkName);
+        checkName = !checkName;
+    }
+
+    private void onPriceClick(View view) {
+        String searchText = txtSearch.getText().toString().trim();
+        loadPriceUpDown(searchText, checkPrice);
+        checkPrice = !checkPrice;
+    }
+
+    private void onSearchClick(View view) {
+        String searchText = txtSearch.getText().toString().trim();
+        if (!searchText.isEmpty()) {
+            loadProducts(searchText);
+            hideKeyboard();
+        }else{
+            loadProducts();
+            hideKeyboard();
+        }
     }
 
 
@@ -73,35 +116,19 @@ public class ShoppingSiteFragement extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shopping_site, container, false);
-
         bindingView(view);
+        bindingAction();
         checkUserLoginAndEmailVerification();
-
-        // Lấy userId của người dùng hiện tại
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String currentUserId = (currentUser != null) ? currentUser.getUid() : null;
         if (currentUserId == null) {
             Toast.makeText(getContext(), "Không tìm thấy ID người dùng", Toast.LENGTH_SHORT).show();
         }
-        // Khởi tạo adapter một lần
         productList = new ArrayList<>();
         productAdapter = new ProductShoppingSiteAdapter(productList, currentUserId);
         recyclerView.setAdapter(productAdapter);
-
         loadProducts();
         loadCategory();
-
-        btnSearch.setOnClickListener(v -> {
-            String searchText = txtSearch.getText().toString().trim();
-            if (!searchText.isEmpty()) {
-                loadProducts(searchText);
-                hideKeyboard();
-            }else{
-                loadProducts();
-                hideKeyboard();
-            }
-        });
-
         return view;
     }
 
@@ -140,8 +167,7 @@ public class ShoppingSiteFragement extends Fragment {
                         }else{
                             emptyPost.setVisibility(View.GONE);
                         }
-
-                    productAdapter.notifyDataSetChanged();
+                        productAdapter.notifyDataSetChanged();
                     }
                 });
     }
@@ -233,7 +259,60 @@ public class ShoppingSiteFragement extends Fragment {
                     }
                 });
 
-}
+    }
+
+
+    private void loadPriceUpDown(String searchQuery, boolean checkPrice) {
+        // Sử dụng để tìm kiếm tất cả sản phẩm và lọc ở client side (tìm kiếm chứa từ khóa)
+        Query.Direction query = checkPrice==true ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+
+        db.collection("Products")
+                .orderBy("price", query)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        productList.clear(); // Xóa danh sách hiện tại để đảm bảo không trùng lặp
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            product.setId(document.getId());
+                            // Kiểm tra xem tên có chứa từ khóa không (case-insensitive)
+                            if (product.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                                productList.add(product);
+                            }
+                        }
+                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+                    } else {
+                        // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo lỗi)
+                        Log.d("SearchResultsActivity", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
+
+    private void loadNameUpDown(String searchQuery, boolean checkName) {
+        // Sử dụng để tìm kiếm tất cả sản phẩm và lọc ở client side (tìm kiếm chứa từ khóa)
+        Query.Direction query = checkName==true ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
+
+        db.collection("Products")
+                .orderBy("name", query)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        productList.clear(); // Xóa danh sách hiện tại để đảm bảo không trùng lặp
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            product.setId(document.getId());
+                            // Kiểm tra xem tên có chứa từ khóa không (case-insensitive)
+                            if (product.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                                productList.add(product);
+                            }
+                        }
+                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+                    } else {
+                        // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo lỗi)
+                        Log.d("SearchResultsActivity", "Error getting documents: ", task.getException());
+                    }
+                });
+    }
 
     private void hideKeyboard() {
         // Ẩn bàn phím trong Fragment
@@ -243,5 +322,7 @@ public class ShoppingSiteFragement extends Fragment {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+
 
 }
