@@ -72,56 +72,53 @@ public class ShoppingSiteFragement extends Fragment {
         btnName = view.findViewById(R.id.btnSortName);
         btnPrice = view.findViewById(R.id.btnSortPrice);
     }
+    private void bindingAction(){
+        btnSearch.setOnClickListener(this::onSearchClick);
+        btnPrice.setOnClickListener(this::onPriceClick);
+        btnName.setOnClickListener(this::onNameClick);
+    }
 
+    private void onNameClick(View view) {
+        String searchText = txtSearch.getText().toString().trim();
+        loadNameUpDown(searchText, checkName);
+        checkName = !checkName;
+    }
+
+    private void onPriceClick(View view) {
+        String searchText = txtSearch.getText().toString().trim();
+        loadPriceUpDown(searchText, checkPrice);
+        checkPrice = !checkPrice;
+    }
+
+    private void onSearchClick(View view) {
+        String searchText = txtSearch.getText().toString().trim();
+        if (!searchText.isEmpty()) {
+            loadProducts(searchText);
+            hideKeyboard();
+        }else{
+            loadProducts();
+            hideKeyboard();
+        }
+    }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shopping_site, container, false);
-
         bindingView(view);
+        bindingAction();
         checkUserLoginAndEmailVerification();
-
-        // Lấy userId của người dùng hiện tại
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String currentUserId = (currentUser != null) ? currentUser.getUid() : null;
         if (currentUserId == null) {
             Toast.makeText(getContext(), "Không tìm thấy ID người dùng", Toast.LENGTH_SHORT).show();
         }
-        // Khởi tạo adapter một lần
         productList = new ArrayList<>();
         productAdapter = new ProductShoppingSiteAdapter(productList, currentUserId);
         recyclerView.setAdapter(productAdapter);
-
         loadProducts();
         loadCategory();
-
-        btnSearch.setOnClickListener(v -> {
-            String searchText = txtSearch.getText().toString().trim();
-            if (!searchText.isEmpty()) {
-                loadProducts(searchText);
-                hideKeyboard();
-            }else{
-                loadProducts();
-                hideKeyboard();
-            }
-        });
-
-
-
-        btnPrice.setOnClickListener(v -> {
-            String searchText = txtSearch.getText().toString().trim();
-            loadPriceUpDown(searchText, checkPrice);
-            checkPrice = !checkPrice;
-        });
-
-        btnName.setOnClickListener(v -> {
-            String searchText = txtSearch.getText().toString().trim();
-            loadNameUpDown(searchText, checkName);
-            checkName = !checkName;
-        });
-
         return view;
     }
 
@@ -160,7 +157,6 @@ public class ShoppingSiteFragement extends Fragment {
                         }else{
                             emptyPost.setVisibility(View.GONE);
                         }
-
                         productAdapter.notifyDataSetChanged();
                     }
                 });
@@ -317,13 +313,6 @@ public class ShoppingSiteFragement extends Fragment {
         }
     }
 
-    private void hideKeyboard() {
-        // Ẩn bàn phím trong Fragment
-        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        View view = getActivity().getCurrentFocus();
-        if (view != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
+
 
 }
