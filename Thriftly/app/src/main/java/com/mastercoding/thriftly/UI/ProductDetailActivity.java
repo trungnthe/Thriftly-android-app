@@ -4,11 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,19 +17,18 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.mastercoding.thriftly.Models.Order;
 import com.mastercoding.thriftly.Models.Product;
+import com.mastercoding.thriftly.Chat.AndroidUtil;
+import com.mastercoding.thriftly.Chat.ChatActivity;
+import com.mastercoding.thriftly.Models.UserModel;
 import com.mastercoding.thriftly.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ProductDetailActivity extends AppCompatActivity {
@@ -44,6 +41,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     private Button cancelButton;
     private FirebaseAuth auth;
     private Product currentProduct;
+    private Button contactButton;
+    private String sellerId;
 
     private void bindingView() {
         // Đảm bảo các ID tương ứng với ID trong layout XML
@@ -58,9 +57,13 @@ public class ProductDetailActivity extends AppCompatActivity {
         modalContainer = findViewById(R.id.modalContainer);
 
         auth = FirebaseAuth.getInstance();
+        buyButton = findViewById(R.id.buy_button);
+        contactButton = findViewById(R.id.contact_button);
     }
 
     private void bindingAction() {
+        contactButton.setOnClickListener(this::onContactButtonClick);
+        ;
         Intent intent = getIntent();
         String productId = intent.getStringExtra("product_id");
         Log.d("Product", "ID được chọn từ Intent: " + productId);
@@ -125,6 +128,42 @@ public class ProductDetailActivity extends AppCompatActivity {
                 });
     }
 
+    private void onContactButtonClick(View view) {
+        if (sellerId != null) {
+            fetchSellerAndStartChat(sellerId);
+        } else {
+            Toast.makeText(this, "Seller information is missing", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Method to fetch seller details and start chat
+    private void fetchSellerAndStartChat(String sellerId) {
+        FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+        firestore.collection("User").document(sellerId).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            UserModel seller = document.toObject(UserModel.class); // Deserialize to UserModel
+                            if (seller != null) {
+                                Intent intent = new Intent(this, ChatActivity.class);
+                                AndroidUtil.passUserModelAsIntent(intent, seller); // Pass seller model
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(this, "Failed to load seller information", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Toast.makeText(this, "Seller not found", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Error loading seller data", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Firestore connection error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
     private void loadProduct(String productId) {
 
         if (productId == null || productId.isEmpty()) {
@@ -143,9 +182,12 @@ public class ProductDetailActivity extends AppCompatActivity {
                             String description = document.getString("description");
                             String imageUrl = document.getString("imageUrl");
                             String categoryId = document.getString("categoryId");
-                            String sellerID = document.getString("userId");
+                            sellerId = document.getString("userId");
                             String status = document.getString("status");
-                            currentProduct = new Product(productId, description, imageUrl, name, price, sellerID, status, categoryId);
+                            currentProduct = new Product(productId, description, imageUrl, name, price, sellerId, status, categoryId);
+
+
+                            // Hiển thị thông tin lên giao diện
                             productName.setText(name != null ? name : "Tên sản phẩm không xác định");
                             productPrice.setText(price != null ? "₫ " + price : "Giá không xác định");
                             productDescription.setText(description != null ? description : "Mô tả không có sẵn");
@@ -162,6 +204,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                             } else {
                                 productCategory.setText("Danh mục không xác định");
                             }
+                            checkIfUserIsOwner(sellerId);
                         } else {
                             Toast.makeText(this, "Không tìm thấy sản phẩm", Toast.LENGTH_SHORT).show();
                         }
@@ -172,6 +215,26 @@ public class ProductDetailActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Lỗi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    // Hàm kiểm tra nếu người dùng hiện tại là chủ sở hữu
+    private void checkIfUserIsOwner(String sellerId) {
+        String currentUserId = getCurrentUserId();
+        if (currentUserId != null && currentUserId.equals(sellerId)) {
+            // Ẩn nút Contact và Buy nếu người dùng hiện tại là chủ sở hữu
+            contactButton.setVisibility(View.GONE);
+            buyButton.setVisibility(View.GONE);
+        }
+    }
+
+    // Hàm lấy ID của người dùng hiện tại
+    private String getCurrentUserId() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            return currentUser.getUid();  // Trả về ID của người dùng hiện tại
+        } else {
+            return null;  // Trường hợp người dùng chưa đăng nhập
+        }
     }
 
     private void loadCategory(String categoryId) {

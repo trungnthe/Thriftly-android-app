@@ -294,7 +294,13 @@ public class ProfileImageFragment extends Fragment {
                 if (cameraAccepted && writeStorageAccepted) {
                     takePhotoWithCamera();
                 } else {
-                    // Quyền bị từ chối
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) ||
+                            shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        // Hiển thị một thông báo giải thích và yêu cầu quyền lại
+                        showPermissionExplanationDialog(CAMERA_REQUEST);
+                    } else {
+                        showGoToSettingsDialog();
+                    }
                 }
             }
         } else if (requestCode == STORAGE_REQUEST) {
@@ -303,11 +309,47 @@ public class ProfileImageFragment extends Fragment {
                 if (writeStorageAccepted) {
                     selectImageFromGallery();
                 } else {
-                    // Quyền bị từ chối
+                    if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        showPermissionExplanationDialog(STORAGE_REQUEST);
+                    } else {
+                        showGoToSettingsDialog();
+                    }
                 }
             }
         }
     }
+
+    private void showPermissionExplanationDialog(int requestCode) {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Permission Required")
+                .setMessage("This permission is required to use this feature. Please allow it to continue.")
+                .setPositiveButton("OK", (dialog, which) -> {
+                    if (requestCode == CAMERA_REQUEST) {
+                        requestCameraPermission();
+                    } else if (requestCode == STORAGE_REQUEST) {
+                        requestStoragePermission();
+                    }
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+    private void showGoToSettingsDialog() {
+        new AlertDialog.Builder(getContext())
+                .setTitle("Permission Denied")
+                .setMessage("You have permanently denied the permission. Please enable it in settings to use this feature.")
+                .setPositiveButton("Go to Settings", (dialog, which) -> {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", getActivity().getPackageName(), null));
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
 
 
 }
