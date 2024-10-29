@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.UI.HomeFragment;
+import com.mastercoding.thriftly.UI.MainProfileFragment;
 import com.mastercoding.thriftly.UI.ProfileFragment;
 import com.mastercoding.thriftly.UI.AddProductActivity;
 import com.mastercoding.thriftly.UI.ShoppingSiteFragement;
@@ -30,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
 
     private ShoppingSiteFragement shoppingSiteFragement;
-    private ProfileFragment profileFragment;
+
+    private MainProfileFragment mainProfileFragment;
 
 
     private void bindingView() {
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         homeFragment = new HomeFragment();
         shoppingSiteFragement = new ShoppingSiteFragement();
 
-        profileFragment = new ProfileFragment();
+        mainProfileFragment = new MainProfileFragment();
 
         fab = findViewById(R.id.fab);  // Tham chiếu FAB
 
@@ -98,13 +100,13 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("MainActivity", "menu_subscriptions");
                 // Thêm fragment Subscription
             } else if (id == R.id.menu_library) {
-                switchFragment(profileFragment);
+                switchFragment(mainProfileFragment);
             }
             return true;
         });
     }
     private void switchFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_layout, fragment)
                 .addToBackStack(null)
                 .commit();
