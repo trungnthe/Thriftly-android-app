@@ -5,6 +5,8 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,6 +32,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.mastercoding.thriftly.Adapter.CategoryAdapter;
+import com.mastercoding.thriftly.Adapter.ImagePagerAdapter;
 import com.mastercoding.thriftly.Adapter.ProductAdapter;
 import com.mastercoding.thriftly.Adapter.ProductShoppingSiteAdapter;
 import com.mastercoding.thriftly.Authen.SignInActivity;
@@ -38,6 +42,7 @@ import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ShoppingSiteFragement extends Fragment {
@@ -58,6 +63,12 @@ public class ShoppingSiteFragement extends Fragment {
 
     private boolean checkPrice;
     private boolean checkName;
+    private ViewPager2 viewPager;
+
+    private Handler handler;
+    private Runnable runnable;
+    private int currentPage = 0;
+
 
 
 
@@ -74,6 +85,7 @@ public class ShoppingSiteFragement extends Fragment {
         btnName = view.findViewById(R.id.btnSortName);
         btnPrice = view.findViewById(R.id.btnSortPrice);
         btnChat = view.findViewById(R.id.btnChat);
+        viewPager = view.findViewById(R.id.viewPager);
     }
     private void bindingAction(){
         btnSearch.setOnClickListener(this::onSearchClick);
@@ -111,13 +123,27 @@ public class ShoppingSiteFragement extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shopping_site, container, false);
         bindingView(view);
         bindingAction();
+        List<Integer> images = Arrays.asList(R.drawable.img_1, R.drawable.img_2, R.drawable.img_3, R.drawable.img_4, R.drawable.img_5, R.drawable.img_6);
+        ImagePagerAdapter adapter = new ImagePagerAdapter(images);
+        viewPager.setAdapter(adapter);
+        handler = new Handler(Looper.getMainLooper());
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (currentPage >= images.size()) {
+                    currentPage = 0;
+                }
+                viewPager.setCurrentItem(currentPage++, true);
+                handler.postDelayed(runnable, 4000);
+            }
+        };
+        handler.postDelayed(runnable, 4000);
         checkUserLoginAndEmailVerification();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String currentUserId = (currentUser != null) ? currentUser.getUid() : null;
