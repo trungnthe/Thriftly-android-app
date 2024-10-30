@@ -53,6 +53,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
         } else {
             holder.btnEdit.setVisibility(View.GONE); // Ẩn nút Edit nếu người dùng không phải là người tạo sản phẩm
         }
+        if ("Sold".equals(product.getStatus())) {
+            holder.btnEdit.setVisibility(View.GONE); // Ẩn nút Action
+        } else {
+            holder.btnEdit.setVisibility(View.VISIBLE); // Hiển thị nút Action nếu trạng thái không phải là Sold
+        }
+
     }
 
 
@@ -110,6 +116,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.VH> {
             tvProductName.setText(product.getName());
             tvProductPrice.setText("Price: " + formattedPrice + " VND");
             tvProductDescription.setText(product.getDescription());
+
+            if (product.getStatus() != null) {
+                if (product.getStatus().equals("Sold")) {
+                    tvProductStatus.setText("Status: Sold");
+                    tvProductStatus.setTextColor(itemView.getResources().getColor(R.color.red));
+                    btnEdit.setVisibility(View.GONE); // Ẩn nút Edit nếu sản phẩm đã bán
+                } else if (product.getStatus().equals("Available")) {
+                    tvProductStatus.setText("Status: Available");
+                    tvProductStatus.setTextColor(itemView.getResources().getColor(R.color.lavender));
+                    btnEdit.setVisibility(View.VISIBLE); // Hiển thị nút Edit nếu sản phẩm còn hàng
+                } else {
+                    tvProductStatus.setText("Status: Unknown");
+                    btnEdit.setVisibility(View.VISIBLE);
+                }
+            } else {
+                tvProductStatus.setText("Status: Unknown");
+                btnEdit.setVisibility(View.VISIBLE);
+            }
 
             // Kiểm tra và tải categoryName từ Firestore nếu chỉ có categoryId
             if (product.getCategoryId() != null) {

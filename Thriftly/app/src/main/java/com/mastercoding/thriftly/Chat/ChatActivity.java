@@ -109,10 +109,6 @@ public class ChatActivity extends AppCompatActivity {
                              if (currUsrName != null) {
                                  String title=currUsrName;
                                  Log.d(TAG, "Current User Name: " + fcmToken);
-                                 SendNotification sendNotification = new SendNotification();
-                                 sendNotification.sendPushNotification(title, message, fcmToken);
-
-
                              }
                          });
                      } else {
