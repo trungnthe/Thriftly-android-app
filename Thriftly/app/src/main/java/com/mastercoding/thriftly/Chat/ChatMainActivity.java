@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.mastercoding.thriftly.R;
 import com.mastercoding.thriftly.UI.ProfileFragment;
@@ -30,6 +31,7 @@ public class ChatMainActivity extends AppCompatActivity {
 
         bindingView();
         bindingAction();
+        getUserId();
 
         getFCMToken();
     }
@@ -75,4 +77,12 @@ public class ChatMainActivity extends AppCompatActivity {
             }
         });
     }
+    private void getUserId() {
+        String userId = FirebaseAuth.getInstance().getUid();
+        if (userId != null) {
+            FirebaseUtil.currentUserDetails().update("userId", userId);
+        }
+    }
+
+
 }
