@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.mastercoding.thriftly.Adapter.CategoryAdapter;
 import com.mastercoding.thriftly.Adapter.ImagePagerAdapter;
 import com.mastercoding.thriftly.Adapter.ProductAdapter;
@@ -163,6 +164,7 @@ public class ShoppingSiteFragement extends Fragment {
         recyclerView.setAdapter(productAdapter);
         loadProducts();
         loadCategory();
+        getFCMToken();
         return view;
     }
 
@@ -362,6 +364,14 @@ public class ShoppingSiteFragement extends Fragment {
         }
     }
 
-
-
+    void getFCMToken(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult();
+                Log.d("FCM Token", "Token: " + token);
+            }
+        });
+        }
+    }
 }
+
