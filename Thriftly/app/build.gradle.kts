@@ -50,6 +50,9 @@ dependencies {
     implementation("com.google.firebase:firebase-storage:20.0.2")
     implementation(platform("com.google.firebase:firebase-bom:32.0.0"))
 
+    implementation ("com.android.volley:volley:1.2.1")
+
+
     implementation("com.google.auth:google-auth-library-oauth2-http:1.3.0")
     implementation("com.google.api-client:google-api-client:1.32.1")
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.12.0"))
