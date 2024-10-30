@@ -19,6 +19,7 @@ import com.mastercoding.thriftly.UI.EditProductActivity;
 import com.mastercoding.thriftly.UI.ProductDetailActivity;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class ProductShoppingSiteAdapter extends RecyclerView.Adapter<ProductShoppingSiteAdapter.VH> {
@@ -83,7 +84,21 @@ public class ProductShoppingSiteAdapter extends RecyclerView.Adapter<ProductShop
         public void setData(Product product) {
             this.product = product;
             tvProductName.setText(product.getName());
-            tvProductPrice.setText("Price: " + product.getPrice() + " VND" );
+
+            DecimalFormat formatter = new DecimalFormat("#,###");
+
+            try {
+                // Chuyển đổi chuỗi giá sang số
+                double price = Double.parseDouble(product.getPrice());
+                String formattedPrice = formatter.format(price);
+
+                // Hiển thị giá đã định dạng
+                tvProductPrice.setText("Price: " + formattedPrice + " VND");
+            } catch (NumberFormatException e) {
+                // Xử lý lỗi nếu giá trị không thể chuyển đổi
+                tvProductPrice.setText("Price: N/A VND");
+                e.printStackTrace();
+            }
 
             // Kiểm tra URL ảnh sản phẩm và hiển thị nếu có
             if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {

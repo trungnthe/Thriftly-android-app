@@ -99,13 +99,11 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void createAccount(String email, String password) {
-
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             if (user != null) {
@@ -114,45 +112,56 @@ public class SignUpActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Toast.makeText(SignUpActivity.this, "Verification email sent. Please check your inbox.", Toast.LENGTH_LONG).show();
-                                            String userId = user.getUid();
-                                            Map<String, Object> userData = new HashMap<>();
-                                            userData.put("email", email);
-                                            userData.put("username", "");
-                                            userData.put("phone", "");
-                                            userData.put("status", true);
-                                            userData.put("image", "1");
+                                            String userId = user.getUid();  // Lấy userId
 
-                                            firestore.collection("User").document(userId).set(userData)
-                                                    .addOnSuccessListener(aVoid -> {
-                                                        Log.d("Firestore", "Lưu dữ liệu thành công");
-                                                        getUserId();
-                                                        getFCMToken();
-                                                        dismissProgressBar();
-                                                        FirebaseAuth.getInstance().signOut();
-                                                        startActivity(new Intent(SignUpActivity.this, EmailVerifyActivity.class));
-                                                        finishAffinity();
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        dismissProgressBar();
-                                                    });
+                                            // Tạo FCM token
+                                            FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<String> tokenTask) {
+                                                    if (tokenTask.isSuccessful()) {
+                                                        String fcmToken = tokenTask.getResult();
 
+                                                        Map<String, Object> userData = new HashMap<>();
+                                                        userData.put("userId", userId);        // Lưu userId vào Firestore
+                                                        userData.put("email", email);
+                                                        userData.put("username", "");
+                                                        userData.put("phone", "");
+                                                        userData.put("status", true);
+                                                        userData.put("image", "1");
+                                                        userData.put("fcmToken", fcmToken);    // Lưu FCM token vào Firestore
+
+                                                        firestore.collection("User").document(userId).set(userData)
+                                                                .addOnSuccessListener(aVoid -> {
+                                                                    Log.d("Firestore", "Lưu dữ liệu thành công");
+                                                                    dismissProgressBar();
+                                                                    FirebaseAuth.getInstance().signOut();
+                                                                    startActivity(new Intent(SignUpActivity.this, EmailVerifyActivity.class));
+                                                                    finishAffinity();
+                                                                })
+                                                                .addOnFailureListener(e -> {
+                                                                    dismissProgressBar();
+                                                                });
+                                                    } else {
+                                                        Toast.makeText(SignUpActivity.this, "Không thể tạo FCM token", Toast.LENGTH_SHORT).show();
+                                                        dismissProgressBar();
+                                                    }
+                                                }
+                                            });
                                         } else {
-                                            // Gặp lỗi khi gửi email xác nhận
                                             Toast.makeText(SignUpActivity.this, "Failed to send verification email.", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                             }
-
                         } else {
-                            // Hiển thị thông báo lỗi từ Firebase
                             String errorMessage = task.getException() != null ? task.getException().getMessage() : "Tạo tài khoản thất bại.";
                             Toast.makeText(SignUpActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
-                            dismissProgressBar();  // Tắt ProgressDialog khi gặp lỗi
+                            dismissProgressBar();
                         }
                     }
                 });
     }
+
 
 
     private boolean validateForm(String email, String password, String confirmPassword) {
@@ -207,19 +216,4 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton.setVisibility(View.VISIBLE);
     }
 
-    private void getFCMToken() {
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                String token = task.getResult();
-                FirebaseUtil.currentUserDetails().update("fcmToken", token);
-            }
-        });
-    }
-
-    private void getUserId() {
-        String userId = FirebaseAuth.getInstance().getUid();
-        if (userId != null) {
-            FirebaseUtil.currentUserDetails().update("userId", userId);
-        }
-    }
 }
