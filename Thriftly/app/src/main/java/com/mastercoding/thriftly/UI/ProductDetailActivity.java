@@ -1,5 +1,6 @@
 package com.mastercoding.thriftly.UI;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,7 @@ import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.Chat.AndroidUtil;
 import com.mastercoding.thriftly.Chat.ChatActivity;
 import com.mastercoding.thriftly.Models.UserModel;
+import com.mastercoding.thriftly.Notification.NotificationService;
 import com.mastercoding.thriftly.R;
 import com.squareup.picasso.Picasso;
 
@@ -84,35 +86,60 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void onConfirmButtonClick(View view) {
+        // Kiểm tra xem sản phẩm đã được tải chưa
+        if (currentProduct == null) {
+            Toast.makeText(this, "Sản phẩm không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        // Lấy thông tin từ currentProduct
         String productId = currentProduct.getId();
-        String sellerId = currentProduct.getUserId(); // Assuming "userId" is the seller ID
+        String sellerId = currentProduct.getUserId(); // sellerId của người bán
         double price = Double.parseDouble(currentProduct.getPrice());
         String userId = auth.getCurrentUser().getUid();
 
-        // Tạo đối tượng chứa thông tin đơn hàng (sử dụng HashMap)
+        // Tạo đối tượng chứa thông tin đơn hàng
         Map<String, Object> order = new HashMap<>();
         order.put("buyerId", userId);
         order.put("orderDate", new Date());
         order.put("productId", productId);
         order.put("sellerId", sellerId);
         order.put("status", "waiting_confirmation");
-        order.put("totalAmount", price); // Hoặc có thể lưu trữ dưới dạng double
+        order.put("totalAmount", price);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Thêm đơn hàng vào Firestore
+        // Lưu đơn hàng vào Firestore
         db.collection("Orders")
                 .add(order)
                 .addOnSuccessListener(documentReference -> {
                     Log.d("TAG", "Order added with ID: " + documentReference.getId());
 
-                    // Cập nhật trạng thái sản phẩm thành "Sold" sau khi thêm đơn hàng thành công
+                    // Cập nhật trạng thái sản phẩm thành "Sold"
                     db.collection("Products").document(productId)
                             .update("status", "Sold")
                             .addOnSuccessListener(aVoid -> {
                                 Log.d("TAG", "Product updated successfully");
+
+                                // Truy xuất fcmToken của người bán và gửi thông báo
+                                db.collection("User").document(sellerId)
+                                        .get()
+                                        .addOnSuccessListener(documentSnapshot -> {
+                                            if (documentSnapshot.exists()) {
+                                                String fcmToken = documentSnapshot.getString("fcmToken");
+                                                if (fcmToken != null && !fcmToken.isEmpty()) {
+                                                    // Gọi NotificationService để gửi thông báo
+                                                    Log.d("FCM", "Sending notification to fcmToken: " + fcmToken); // Log fcmToken
+                                                    NotificationService.sendNotification(fcmToken, "Đơn hàng mới", "Bạn có một đơn hàng mới cho sản phẩm: " + currentProduct.getName());
+                                                    Toast.makeText(ProductDetailActivity.this, "Thông báo đã được gửi tới người bán!", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(ProductDetailActivity.this, "Người bán không có FCM Token", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                Toast.makeText(ProductDetailActivity.this, "Không tìm thấy thông tin người bán", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> Toast.makeText(ProductDetailActivity.this, "Lỗi khi lấy thông tin người bán", Toast.LENGTH_SHORT).show());
+
                                 Toast.makeText(ProductDetailActivity.this, "Mua hàng thành công!", Toast.LENGTH_SHORT).show();
                                 finish(); // Đóng activity sau khi mua hàng thành công
                             })
@@ -126,6 +153,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                     Toast.makeText(ProductDetailActivity.this, "Lỗi khi tạo đơn hàng", Toast.LENGTH_SHORT).show();
                 });
     }
+
+
+
     private void onContactButtonClick(View view) {
         if (sellerId != null) {
             fetchSellerAndStartChat(sellerId);
@@ -214,6 +244,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "Lỗi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
     // Hàm kiểm tra nếu người dùng hiện tại là chủ sở hữu
     private void checkIfUserIsOwner(String sellerId) {
         String currentUserId = getCurrentUserId();

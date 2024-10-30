@@ -12,6 +12,7 @@ import com.mastercoding.thriftly.UI.HomeFragment;
 import com.mastercoding.thriftly.UI.MainProfileFragment;
 import com.mastercoding.thriftly.UI.ProfileFragment;
 import com.mastercoding.thriftly.UI.AddProductActivity;
+import com.mastercoding.thriftly.UI.SalesHistoryFragment;
 import com.mastercoding.thriftly.UI.ShoppingSiteFragement;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
 
     private ShoppingSiteFragement shoppingSiteFragement;
+    private SalesHistoryFragment salesHistoryFragment;
 
     ChatFragment chatFragment;
 
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         shoppingSiteFragement = new ShoppingSiteFragement();
 
         mainProfileFragment = new MainProfileFragment();
+        salesHistoryFragment = new SalesHistoryFragment();
 
         fab = findViewById(R.id.fab);  // Tham chiếu FAB
 
@@ -68,7 +71,19 @@ public class MainActivity extends AppCompatActivity {
 //                switchFragment(new HomeFragment());
 //            }
 //        }
-        switchFragment(new ShoppingSiteFragement());
+
+
+        Intent intent = getIntent();
+        int navigateValue = intent.getIntExtra("navigate_to", -1);
+        Log.d("MainActivity", "Intent received in onCreate with navigate_to: " + navigateValue);
+
+        // Kiểm tra giá trị của navigate_to để chuyển đến SalesHistoryFragment
+        if (navigateValue == 1) {
+            switchFragment(new SalesHistoryFragment());  // Điều hướng đến SalesHistoryFragment
+        } else {
+            switchFragment(new ShoppingSiteFragement());  // Fragment mặc định khi vào Activity
+        }
+
         //setSupportActionBar(toolbar);
         bottomNavigationView.setBackground(null);
         setupBottomNavigation();
@@ -105,4 +120,20 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent); // Cập nhật Intent mới
+
+        int navigateValue = intent.getIntExtra("navigate_to", -1);
+        Log.d("MainActivity", "Intent received in onNewIntent with navigate_to: " + navigateValue);
+
+        // Kiểm tra giá trị của navigate_to để chuyển đến SalesHistoryFragment
+        if (navigateValue == 1) {
+            switchFragment(new SalesHistoryFragment());
+        }
+    }
+
+
 }

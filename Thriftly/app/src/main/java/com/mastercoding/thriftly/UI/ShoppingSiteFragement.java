@@ -5,6 +5,8 @@ import static androidx.core.content.ContextCompat.getSystemService;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +31,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.mastercoding.thriftly.Adapter.CategoryAdapter;
+import com.mastercoding.thriftly.Adapter.ImagePagerAdapter;
 import com.mastercoding.thriftly.Adapter.ProductAdapter;
 import com.mastercoding.thriftly.Adapter.ProductShoppingSiteAdapter;
 import com.mastercoding.thriftly.Authen.SignInActivity;
@@ -38,6 +43,7 @@ import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ShoppingSiteFragement extends Fragment {
@@ -58,6 +64,12 @@ public class ShoppingSiteFragement extends Fragment {
 
     private boolean checkPrice;
     private boolean checkName;
+    private ViewPager2 viewPager;
+
+    private Handler handler;
+    private Runnable runnable;
+    private int currentPage = 0;
+
 
 
 
@@ -74,6 +86,7 @@ public class ShoppingSiteFragement extends Fragment {
         btnName = view.findViewById(R.id.btnSortName);
         btnPrice = view.findViewById(R.id.btnSortPrice);
         btnChat = view.findViewById(R.id.btnChat);
+        viewPager = view.findViewById(R.id.viewPager);
     }
     private void bindingAction(){
         btnSearch.setOnClickListener(this::onSearchClick);
@@ -111,13 +124,35 @@ public class ShoppingSiteFragement extends Fragment {
     }
 
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_shopping_site, container, false);
         bindingView(view);
         bindingAction();
+        List<Integer> originalImages = Arrays.asList(R.drawable.img_1, R.drawable.img_2, R.drawable.img_3);
+        List<Integer> images = new ArrayList<>(originalImages);
+        images.addAll(originalImages); // Nhân đôi danh sách để tạo hiệu ứng lặp
+
+        ImagePagerAdapter adapter = new ImagePagerAdapter(images);
+        viewPager.setAdapter(adapter);
+        handler = new Handler(Looper.getMainLooper());
+
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (currentPage >= images.size() / 2) { // Khi đạt đến cuối nửa đầu của danh sách
+                    currentPage = 0; // Đặt lại về ảnh đầu tiên
+                    viewPager.setCurrentItem(currentPage, false); // Đặt lại không có hiệu ứng chuyển tiếp
+                } else {
+                    viewPager.setCurrentItem(currentPage++, true); // Chuyển tiếp ảnh kế tiếp
+                }
+                handler.postDelayed(runnable, 3500);
+            }
+        };
+
+        handler.postDelayed(runnable, 3500);
+
         checkUserLoginAndEmailVerification();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String currentUserId = (currentUser != null) ? currentUser.getUid() : null;
@@ -129,6 +164,7 @@ public class ShoppingSiteFragement extends Fragment {
         recyclerView.setAdapter(productAdapter);
         loadProducts();
         loadCategory();
+        getFCMToken();
         return view;
     }
 
@@ -151,26 +187,31 @@ public class ShoppingSiteFragement extends Fragment {
 
     // Tải danh sách sản phẩm từ Firestore
     private void loadProducts() {
-
-        db.collection("Products").get()
+        db.collection("Products")
+                .whereNotEqualTo("status", "Sold") // Điều kiện để loại bỏ sản phẩm có trạng thái là "Sold"
+                .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Tạo một Product từ documentSnapshot
-                        for (QueryDocumentSnapshot document : task.getResult()){
+                        productList.clear(); // Xóa danh sách hiện tại để tránh trùng lặp
+                        for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
                             product.setId(document.getId());
                             productList.add(product);
                         }
 
                         if (productList.isEmpty()) {
-                            emptyPost.setVisibility(View.VISIBLE);
-                        }else{
+                            emptyPost.setVisibility(View.VISIBLE); // Hiển thị thông báo khi không có sản phẩm
+                        } else {
                             emptyPost.setVisibility(View.GONE);
                         }
-                        productAdapter.notifyDataSetChanged();
+                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter để hiển thị danh sách sản phẩm
+                    } else {
+                        Log.d("ShoppingSiteFragment", "Lỗi khi tải sản phẩm: ", task.getException());
+                        Toast.makeText(getContext(), "Lỗi khi tải sản phẩm", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
     private void loadCategory(){
 
@@ -323,6 +364,14 @@ public class ShoppingSiteFragement extends Fragment {
         }
     }
 
-
-
+    void getFCMToken(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                String token = task.getResult();
+                Log.d("FCM Token", "Token: " + token);
+            }
+        });
+        }
+    }
 }
+
