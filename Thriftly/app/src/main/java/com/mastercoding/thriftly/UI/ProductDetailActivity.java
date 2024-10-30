@@ -62,8 +62,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void bindingAction() {
-        contactButton.setOnClickListener(this::onContactButtonClick);
-        ;
+        contactButton.setOnClickListener(this::onContactButtonClick);;
         Intent intent = getIntent();
         String productId = intent.getStringExtra("product_id");
         Log.d("Product", "ID được chọn từ Intent: " + productId);
@@ -127,7 +126,6 @@ public class ProductDetailActivity extends AppCompatActivity {
                     Toast.makeText(ProductDetailActivity.this, "Lỗi khi tạo đơn hàng", Toast.LENGTH_SHORT).show();
                 });
     }
-
     private void onContactButtonClick(View view) {
         if (sellerId != null) {
             fetchSellerAndStartChat(sellerId);
@@ -216,7 +214,6 @@ public class ProductDetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "Lỗi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
     // Hàm kiểm tra nếu người dùng hiện tại là chủ sở hữu
     private void checkIfUserIsOwner(String sellerId) {
         String currentUserId = getCurrentUserId();
