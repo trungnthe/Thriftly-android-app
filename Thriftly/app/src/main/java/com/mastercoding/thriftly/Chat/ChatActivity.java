@@ -94,80 +94,17 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d(TAG, "Current User Name: " + otherUser.getUsername());
                 Log.d(TAG, "Current User Name: " + otherUser.getFcmToken());
                 NotificationService.sendNotification(otherUser.getFcmToken(),"New Message from " + otherUser.getUsername(), message);
-                getFCMToken(otherUser.getUserId(),message);
             }
         }));
     }
- // receiverId for getting fcmtoken from database
- private void getFCMToken(String userId, String message) {
-     FirebaseDatabase.getInstance().getReference()
-             .child("User")
-             .child(userId)
-             .child("fcmToken")
-             .addListenerForSingleValueEvent(new ValueEventListener() {
-                 @Override
-                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                     if (snapshot.exists()) {
-                         String fcmToken = snapshot.getValue(String.class);
-                         // Fetch the current user's name after getting the FCM token
-                         setCurrUsrName(() -> {
-                             if (currUsrName != null) {
-                                 String title=currUsrName;
-                                 Log.d(TAG, "Current User Name: " + fcmToken);
-                                 Log.d(TAG, "Current User Name: " + currUsrName);
-
-                             }
-                         });
-                     } else {
-                         Log.e(TAG, "FCM Token not found for user: " + userId);
-                     }
-                 }
-
-                 @Override
-                 public void onCancelled(@NonNull DatabaseError error) {
-                     Log.e(TAG, "Error fetching FCM token: " + error.getMessage());
-                 }
-             });
- }
-
-    private void setCurrUsrName(OnRecNameFetchedListener listener) {
-        FirebaseDatabase.getInstance().getReference()
-                .child("User")
-                .child(FirebaseUtil.currentUserId())
-                .child("username")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            currUsrName = dataSnapshot.getValue(String.class);
-                            Log.d(TAG, "Current User Name: " + currUsrName);
-                            listener.onFetched();
-                        } else {
-                            Log.e(TAG + " Error", "Current User Name not found for user: " + FirebaseUtil.currentUserId());
-
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(TAG + " Error", "Database error: " + databaseError.getMessage());
-
-                    }
-                });
-    }
-
-
-
 
     private void onBackButton(View view) {
-
         Intent intent = new Intent(this, ChatMainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
         finish();
 
     }
-
 
     private void loadProfilePicture(UserModel user, ImageView profilePic) {
         if (user == null || TextUtils.isEmpty(user.getImage())) {

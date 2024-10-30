@@ -32,6 +32,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.mastercoding.thriftly.Chat.FirebaseUtil;
 import com.mastercoding.thriftly.MainActivity;
 import com.mastercoding.thriftly.R;
 
@@ -142,6 +144,8 @@ public class SignInActivity extends AppCompatActivity {
                             firestore.collection("User").document(userId).set(map)
                                     .addOnSuccessListener(aVoid -> {
                                         Log.d("Firestore", "Lưu dữ liệu thành công");
+                                        getUserId();
+                                        getFCMToken();
                                         dismissProgressBar();
                                         updateUI(user);
                                     })
@@ -252,5 +256,21 @@ public class SignInActivity extends AppCompatActivity {
     private void dismissProgressBar() {
         progressBar.setVisibility(View.GONE);
         signInButton.setVisibility(View.VISIBLE);
+    }
+
+    private void getFCMToken() {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                String token = task.getResult();
+                FirebaseUtil.currentUserDetails().update("fcmToken", token);
+            }
+        });
+    }
+
+    private void getUserId() {
+        String userId = FirebaseAuth.getInstance().getUid();
+        if (userId != null) {
+            FirebaseUtil.currentUserDetails().update("userId", userId);
+        }
     }
 }
