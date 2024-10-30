@@ -64,8 +64,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void bindingAction() {
-        contactButton.setOnClickListener(this::onContactButtonClick);
-        ;
+        contactButton.setOnClickListener(this::onContactButtonClick);;
         Intent intent = getIntent();
         String productId = intent.getStringExtra("product_id");
         Log.d("Product", "ID được chọn từ Intent: " + productId);

@@ -127,11 +127,28 @@ public class SalesHistoryFragment extends Fragment {
                                             order.setProductName(productName);
                                             order.setImageUrl(imageUrl);
 
-                                            salesOrderList.add(order);
+                                            // Lấy thông tin sellerId từ bảng Users
+                                            String buyerId = order.getBuyerId();
+                                            db.collection("User").document(buyerId)
+                                                    .get()
+                                                    .addOnCompleteListener(userTask -> {
+                                                        if (userTask.isSuccessful() && userTask.getResult() != null) {
+                                                            String buyerName = userTask.getResult().getString("username");
 
-                                            // Kiểm tra và cập nhật danh sách lọc sau mỗi lần thêm đơn hàng
-                                            Collections.sort(salesOrderList, (o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate()));
-                                            filterSalesOrdersByStatus(spinnerOrderStatus.getSelectedItem().toString());
+                                                            // Cài đặt username trong order
+                                                            order.setBuyerName(buyerName); // Giả sử Order có phương thức setUsername()
+
+                                                            salesOrderList.add(order);
+
+                                                            // Sắp xếp danh sách theo ngày đặt hàng
+                                                            Collections.sort(salesOrderList, (o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate()));
+
+                                                            // Lọc danh sách theo trạng thái đơn hàng
+                                                            filterSalesOrdersByStatus(spinnerOrderStatus.getSelectedItem().toString());
+                                                        } else {
+                                                            Log.d("Firestore", "Error getting user details: ", userTask.getException());
+                                                        }
+                                                    });
                                         } else {
                                             Log.d("Firestore", "Error getting product details: ", productTask.getException());
                                         }

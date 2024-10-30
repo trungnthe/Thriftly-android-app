@@ -41,8 +41,8 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
     public void onBindViewHolder(@NonNull SalesViewHolder holder, int position) {
         Order sale = salesList.get(position);
 
-        holder.tvOrderId.setText("Mã đơn hàng: " + sale.getOrderId());
-        holder.tvCustomerName.setText("Người mua: " + sale.getBuyerId());
+        holder.tvOrderId.setText("Người mua: " + sale.getBuyerName()) ;
+        holder.tvCustomerName.setText("Tên sản phẩm:  " + sale.getProductName());
         holder.tvTotalPrice.setText("Thành tiền: " + sale.getTotalAmount() + " VND");
 
         Glide.with(context)
@@ -78,7 +78,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
 
         // Xử lý sự kiện cho các nút
         holder.btnConfirm.setOnClickListener(v -> confirmOrder(sale.getOrderId()));
-        holder.btnCancel.setOnClickListener(v -> cancelOrder(sale.getOrderId()));
+        holder.btnCancel.setOnClickListener(v -> cancelOrder(sale.getOrderId(), sale.getProductId()));
         holder.btnContact.setOnClickListener(v -> contactCustomer(sale.getBuyerId()));
         holder.btndelivered.setOnClickListener(v -> confirmDelivered(sale.getOrderId()));
     }
@@ -108,14 +108,20 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
 
     }
 
-    private void cancelOrder(String orderId) {
+    private void cancelOrder(String orderId, String productId) {
+        // Cập nhật trạng thái đơn hàng thành "canceled"
         db.collection("Orders").document(orderId)
                 .update("status", "canceled")
                 .addOnSuccessListener(aVoid -> {
                     Log.d("Firestore", "Order canceled successfully");
+
+                    // Cập nhật trạng thái sản phẩm thành "available" (nếu cần)
+                    db.collection("Products").document(productId)
+                            .update("status", "available")
+                            .addOnSuccessListener(aVoid1 -> Log.d("Firestore", "Product status updated to available"))
+                            .addOnFailureListener(e -> Log.d("Firestore", "Error updating product status: ", e));
                 })
                 .addOnFailureListener(e -> Log.d("Firestore", "Error canceling order: ", e));
-
     }
 
     private void contactCustomer(String customerName) {
