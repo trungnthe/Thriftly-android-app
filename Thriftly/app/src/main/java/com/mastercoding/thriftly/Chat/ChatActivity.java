@@ -27,6 +27,7 @@ import com.mastercoding.thriftly.Adapter.ChatRecyclerAdapter;
 import com.mastercoding.thriftly.Models.ChatMessageModel;
 import com.mastercoding.thriftly.Models.ChatroomModel;
 import com.mastercoding.thriftly.Models.UserModel;
+import com.mastercoding.thriftly.Notification.NotificationService;
 import com.mastercoding.thriftly.R;
 
 import org.json.JSONObject;
@@ -89,6 +90,10 @@ public class ChatActivity extends AppCompatActivity {
             String message = messageInput.getText().toString().trim();
             if (!message.isEmpty()) {
                 sendMessageToUser(message);
+                Log.d(TAG, "Current User Name: " + message);
+                Log.d(TAG, "Current User Name: " + otherUser.getUsername());
+                Log.d(TAG, "Current User Name: " + otherUser.getFcmToken());
+                NotificationService.sendNotification(otherUser.getFcmToken(),"New Message from " + otherUser.getUsername(), message);
                 getFCMToken(otherUser.getUserId(),message);
             }
         }));
@@ -109,6 +114,8 @@ public class ChatActivity extends AppCompatActivity {
                              if (currUsrName != null) {
                                  String title=currUsrName;
                                  Log.d(TAG, "Current User Name: " + fcmToken);
+                                 Log.d(TAG, "Current User Name: " + currUsrName);
+
                              }
                          });
                      } else {
