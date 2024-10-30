@@ -31,9 +31,7 @@ public class ChatMainActivity extends AppCompatActivity {
 
         bindingView();
         bindingAction();
-        getUserId();
 
-        getFCMToken();
     }
 
     private void bindingView() {
@@ -67,21 +65,6 @@ public class ChatMainActivity extends AppCompatActivity {
 
     private void onClickSearchButton(View view) {
         startActivity(new Intent(ChatMainActivity.this, SearchUserActivity.class));
-    }
-
-    private void getFCMToken() {
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                String token = task.getResult();
-                FirebaseUtil.currentUserDetails().update("fcmToken", token);
-            }
-        });
-    }
-    private void getUserId() {
-        String userId = FirebaseAuth.getInstance().getUid();
-        if (userId != null) {
-            FirebaseUtil.currentUserDetails().update("userId", userId);
-        }
     }
 
 
