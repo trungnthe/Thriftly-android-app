@@ -7,4 +7,12 @@
     <string name="add_product_button">Đăng sản phẩm</string>
     <string name="product_name_hint">Tên sản phẩm</string>
     <string name="product_price_hint">Giá sản phẩm</string>
+
+<string-array name="order_status_array">
+    <item>Đang chờ xác nhận</item>
+    <item>Đang giao</item>
+    <item>Đã giao</item>
+    <item>Đã hoàn thành</item>
+    <item>Đã hủy</item>
+</string-array>
 </resources>

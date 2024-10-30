@@ -3,24 +3,18 @@ package com.mastercoding.thriftly;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.Toast;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.mastercoding.thriftly.Authen.SignInActivity;
 import com.mastercoding.thriftly.Chat.ChatFragment;
 import com.mastercoding.thriftly.UI.HomeFragment;
+import com.mastercoding.thriftly.UI.MainProfileFragment;
 import com.mastercoding.thriftly.UI.ProfileFragment;
 import com.mastercoding.thriftly.UI.AddProductActivity;
 import com.mastercoding.thriftly.UI.ShoppingSiteFragement;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,18 +25,19 @@ public class MainActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
 
     private ShoppingSiteFragement shoppingSiteFragement;
-    private ProfileFragment profileFragment;
+
     ChatFragment chatFragment;
+
+    private MainProfileFragment mainProfileFragment;
 
 
     private void bindingView() {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        //toolbar = findViewById(R.id.toolbar);
         homeFragment = new HomeFragment();
         chatFragment= new ChatFragment();
         shoppingSiteFragement = new ShoppingSiteFragement();
 
-        profileFragment = new ProfileFragment();
+        mainProfileFragment = new MainProfileFragment();
 
         fab = findViewById(R.id.fab);  // Tham chiếu FAB
 
@@ -99,13 +94,13 @@ public class MainActivity extends AppCompatActivity {
                 switchFragment(homeFragment);
 
             } else if (id == R.id.menu_library) {
-                switchFragment(profileFragment);
+                switchFragment(mainProfileFragment);
             }
             return true;
         });
     }
     private void switchFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
+            getSupportFragmentManager().beginTransaction()
                 .replace(R.id.frame_layout, fragment)
                 .addToBackStack(null)
                 .commit();

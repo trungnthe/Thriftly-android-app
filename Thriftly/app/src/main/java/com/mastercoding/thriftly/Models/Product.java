@@ -35,6 +35,17 @@ public class Product {
 
     }
 
+    public Product(String id, String description, String imageUrl, String name, String price, String userId, String status, String categoryId) {
+        this.id = id;
+        this.description = description;
+        this.imageUrl = imageUrl;
+        this.name = name;
+        this.price = price;
+        this.userId = userId;
+        this.status = status;
+        this.categoryId = categoryId;
+    }
+
     // Getter và Setter cho tất cả các thuộc tính
     public String getId() {
         return id;
