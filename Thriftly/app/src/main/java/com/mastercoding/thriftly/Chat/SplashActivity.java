@@ -3,6 +3,7 @@ package com.mastercoding.thriftly.Chat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,6 +55,9 @@ public class SplashActivity extends AppCompatActivity {
                     finish();
                 }
             },1000);
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
         }
+
     }
 }
