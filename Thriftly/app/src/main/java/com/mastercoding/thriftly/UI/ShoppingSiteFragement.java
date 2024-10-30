@@ -371,7 +371,7 @@ public class ShoppingSiteFragement extends Fragment {
                 Log.d("FCM Token", "Token: " + token);
             }
         });
-        }
     }
 }
+
 

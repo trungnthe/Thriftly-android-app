@@ -2,6 +2,7 @@ package com.mastercoding.thriftly.Adapter;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.mastercoding.thriftly.Models.Order;
 import com.mastercoding.thriftly.R;
+import com.mastercoding.thriftly.UI.ProductDetailActivity;
 
 import java.util.List;
 
@@ -114,11 +116,14 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
 
         holder.btnReorder.setOnClickListener(v -> {
-            // Xử lý logic mua lại sản phẩm
-        });
+            // Kiểm tra các giá trị trước khi truyền vào Intent
+            Intent intent = new Intent(context, ProductDetailActivity.class);
 
-        holder.btnContactSeller.setOnClickListener(v -> {
-            // Xử lý logic liên hệ với người bán
+            // Truyền dữ liệu product_id qua Intent để hiển thị thông tin chi tiết sản phẩm
+            intent.putExtra("product_id", order.getProductId());
+
+            // Chuyển sang màn hình chi tiết sản phẩm
+            context.startActivity(intent);
         });
     }
 

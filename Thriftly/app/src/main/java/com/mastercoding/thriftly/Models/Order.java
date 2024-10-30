@@ -11,7 +11,7 @@ public class Order {
     private double totalAmount;
     private String productName;   // New field
     private String imageUrl;
-
+    private String buyerName;
     public Order() {
         // No-arg constructor for Firestore
     }
@@ -26,16 +26,17 @@ public class Order {
         this.totalAmount = totalAmount;
     }
 
-    public Order(String buyerId, Date orderDate, String orderId, String productId, String sellerId, String status, double totalAmount, String productName, String imageUrl) {
+    public Order(String buyerId, Date orderDate, String productId, String sellerId, String orderId, String status, double totalAmount, String productName, String imageUrl, String buyerName) {
         this.buyerId = buyerId;
         this.orderDate = orderDate;
-        this.orderId = orderId;
         this.productId = productId;
         this.sellerId = sellerId;
+        this.orderId = orderId;
         this.status = status;
         this.totalAmount = totalAmount;
         this.productName = productName;
         this.imageUrl = imageUrl;
+        this.buyerName = buyerName;
     }
 
     // Getters and Setters
@@ -108,6 +109,14 @@ public class Order {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getBuyerName() {
+        return buyerName;
+    }
+
+    public void setBuyerName(String buyerName) {
+        this.buyerName = buyerName;
     }
 
     @Override
