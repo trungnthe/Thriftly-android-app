@@ -1,15 +1,15 @@
 package com.mastercoding.thriftly.UI;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Spinner;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,21 +21,29 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.mastercoding.thriftly.Models.Product;
 import com.mastercoding.thriftly.Chat.AndroidUtil;
 import com.mastercoding.thriftly.Chat.ChatActivity;
 import com.mastercoding.thriftly.Models.UserModel;
+import com.mastercoding.thriftly.Notification.NotificationService;
 import com.mastercoding.thriftly.R;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProductDetailActivity extends AppCompatActivity {
-
+    private Button buyButton;
+    private LinearLayout modalContainer;
     private TextView productName, productPrice, productDescription;
     private ImageView productImage;
     private TextView productCategory;
-    private Button buyButton,contactButton;
+    private Button confirmButton;
+    private Button cancelButton;
+    private FirebaseAuth auth;
+    private Product currentProduct;
+    private Button contactButton;
     private String sellerId;
 
     private void bindingView() {
@@ -46,16 +54,109 @@ public class ProductDetailActivity extends AppCompatActivity {
         productDescription = findViewById(R.id.product_description_input);
         productCategory = findViewById(R.id.product_category);
         buyButton = findViewById(R.id.buy_button);
+        confirmButton = findViewById(R.id.confirmButton);
+        cancelButton = findViewById(R.id.cancelButton);
+        modalContainer = findViewById(R.id.modalContainer);
+
+        auth = FirebaseAuth.getInstance();
+        buyButton = findViewById(R.id.buy_button);
         contactButton = findViewById(R.id.contact_button);
     }
 
     private void bindingAction() {
-        contactButton.setOnClickListener(this::onContactButtonClick);;
+        contactButton.setOnClickListener(this::onContactButtonClick);
+        ;
         Intent intent = getIntent();
         String productId = intent.getStringExtra("product_id");
         Log.d("Product", "ID được chọn từ Intent: " + productId);
         loadProduct(productId);
+        buyButton.setOnClickListener(this::onBuyButtonClick);
+        confirmButton.setOnClickListener(this::onConfirmButtonClick);
+        cancelButton.setOnClickListener(v -> modalContainer.setVisibility(View.GONE));
     }
+
+    private void onBuyButtonClick(View view) {
+        // Kiểm tra xem sản phẩm đã được tải chưa
+        if (currentProduct == null) {
+            Toast.makeText(this, "Vui lòng đợi sản phẩm được tải", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Hiển thị dialog xác nhận mua hàng
+        modalContainer.setVisibility(View.VISIBLE); // Hiển thị modal
+    }
+
+    private void onConfirmButtonClick(View view) {
+        // Kiểm tra xem sản phẩm đã được tải chưa
+        if (currentProduct == null) {
+            Toast.makeText(this, "Sản phẩm không hợp lệ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String productId = currentProduct.getId();
+        String sellerId = currentProduct.getUserId(); // sellerId của người bán
+        double price = Double.parseDouble(currentProduct.getPrice());
+        String userId = auth.getCurrentUser().getUid();
+
+        // Tạo đối tượng chứa thông tin đơn hàng
+        Map<String, Object> order = new HashMap<>();
+        order.put("buyerId", userId);
+        order.put("orderDate", new Date());
+        order.put("productId", productId);
+        order.put("sellerId", sellerId);
+        order.put("status", "waiting_confirmation");
+        order.put("totalAmount", price);
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Lưu đơn hàng vào Firestore
+        db.collection("Orders")
+                .add(order)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("TAG", "Order added with ID: " + documentReference.getId());
+
+                    // Cập nhật trạng thái sản phẩm thành "Sold"
+                    db.collection("Products").document(productId)
+                            .update("status", "Sold")
+                            .addOnSuccessListener(aVoid -> {
+                                Log.d("TAG", "Product updated successfully");
+
+                                // Truy xuất fcmToken của người bán và gửi thông báo
+                                db.collection("User").document(sellerId)
+                                        .get()
+                                        .addOnSuccessListener(documentSnapshot -> {
+                                            if (documentSnapshot.exists()) {
+                                                String fcmToken = documentSnapshot.getString("fcmToken");
+                                                if (fcmToken != null && !fcmToken.isEmpty()) {
+                                                    // Gọi NotificationService để gửi thông báo
+                                                    Log.d("FCM", "Sending notification to fcmToken: " + fcmToken); // Log fcmToken
+                                                    NotificationService.sendNotification(fcmToken, "Đơn hàng mới", "Bạn có một đơn hàng mới cho sản phẩm: " + currentProduct.getName());
+                                                    Toast.makeText(ProductDetailActivity.this, "Thông báo đã được gửi tới người bán!", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(ProductDetailActivity.this, "Người bán không có FCM Token", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                Toast.makeText(ProductDetailActivity.this, "Không tìm thấy thông tin người bán", Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> Toast.makeText(ProductDetailActivity.this, "Lỗi khi lấy thông tin người bán", Toast.LENGTH_SHORT).show());
+
+                                Toast.makeText(ProductDetailActivity.this, "Mua hàng thành công!", Toast.LENGTH_SHORT).show();
+                                finish(); // Đóng activity sau khi mua hàng thành công
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.w("TAG", "Error updating product", e);
+                                Toast.makeText(ProductDetailActivity.this, "Lỗi khi cập nhật sản phẩm", Toast.LENGTH_SHORT).show();
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("TAG", "Error adding order", e);
+                    Toast.makeText(ProductDetailActivity.this, "Lỗi khi tạo đơn hàng", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+
     private void onContactButtonClick(View view) {
         if (sellerId != null) {
             fetchSellerAndStartChat(sellerId);
@@ -111,6 +212,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                             String imageUrl = document.getString("imageUrl");
                             String categoryId = document.getString("categoryId");
                             sellerId = document.getString("userId");
+                            String status = document.getString("status");
+                            currentProduct = new Product(productId, description, imageUrl, name, price, sellerId, status, categoryId);
+
 
                             // Hiển thị thông tin lên giao diện
                             productName.setText(name != null ? name : "Tên sản phẩm không xác định");
@@ -141,6 +245,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     Toast.makeText(this, "Lỗi kết nối Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
     // Hàm kiểm tra nếu người dùng hiện tại là chủ sở hữu
     private void checkIfUserIsOwner(String sellerId) {
         String currentUserId = getCurrentUserId();

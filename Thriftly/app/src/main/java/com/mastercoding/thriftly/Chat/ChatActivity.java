@@ -93,39 +93,35 @@ public class ChatActivity extends AppCompatActivity {
             }
         }));
     }
-    // receiverId for getting fcmtoken from database
-    private void getFCMToken(String userId, String message) {
-        FirebaseDatabase.getInstance().getReference()
-                .child("User")
-                .child(userId)
-                .child("fcmToken")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.exists()) {
-                            String fcmToken = snapshot.getValue(String.class);
-                            // Fetch the current user's name after getting the FCM token
-                            setCurrUsrName(() -> {
-                                if (currUsrName != null) {
-                                    String title=currUsrName;
-                                    Log.d(TAG, "Current User Name: " + fcmToken);
-                                    SendNotification sendNotification = new SendNotification();
-                                    sendNotification.sendPushNotification(title, message, fcmToken);
+ // receiverId for getting fcmtoken from database
+ private void getFCMToken(String userId, String message) {
+     FirebaseDatabase.getInstance().getReference()
+             .child("User")
+             .child(userId)
+             .child("fcmToken")
+             .addListenerForSingleValueEvent(new ValueEventListener() {
+                 @Override
+                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                     if (snapshot.exists()) {
+                         String fcmToken = snapshot.getValue(String.class);
+                         // Fetch the current user's name after getting the FCM token
+                         setCurrUsrName(() -> {
+                             if (currUsrName != null) {
+                                 String title=currUsrName;
+                                 Log.d(TAG, "Current User Name: " + fcmToken);
+                             }
+                         });
+                     } else {
+                         Log.e(TAG, "FCM Token not found for user: " + userId);
+                     }
+                 }
 
-
-                                }
-                            });
-                        } else {
-                            Log.e(TAG, "FCM Token not found for user: " + userId);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e(TAG, "Error fetching FCM token: " + error.getMessage());
-                    }
-                });
-    }
+                 @Override
+                 public void onCancelled(@NonNull DatabaseError error) {
+                     Log.e(TAG, "Error fetching FCM token: " + error.getMessage());
+                 }
+             });
+ }
 
     private void setCurrUsrName(OnRecNameFetchedListener listener) {
         FirebaseDatabase.getInstance().getReference()

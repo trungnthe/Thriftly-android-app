@@ -61,10 +61,6 @@ dependencies {
 
 
 
-    dependencies {
-        implementation ("com.facebook.android:facebook-login:16.0.0")
-    }
-
     implementation ("de.hdodenhof:circleimageview:3.1.0")
     implementation ("androidx.appcompat:appcompat:1.3.1")
     implementation("com.squareup.picasso:picasso:2.71828") {
