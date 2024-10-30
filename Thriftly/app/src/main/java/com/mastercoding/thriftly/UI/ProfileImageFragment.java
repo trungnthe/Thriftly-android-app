@@ -62,7 +62,6 @@ public class ProfileImageFragment extends Fragment {
 
     private String[] cameraPermission;
     private String[] storagePermission;
-
     FirebaseStorage storage;
     StorageReference storageReference;
     FirebaseUser firebaseUser;
