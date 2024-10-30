@@ -129,21 +129,29 @@ public class ShoppingSiteFragement extends Fragment {
         View view = inflater.inflate(R.layout.fragment_shopping_site, container, false);
         bindingView(view);
         bindingAction();
-        List<Integer> images = Arrays.asList(R.drawable.img_1, R.drawable.img_2, R.drawable.img_3, R.drawable.img_4, R.drawable.img_5, R.drawable.img_6);
+        List<Integer> originalImages = Arrays.asList(R.drawable.img_1, R.drawable.img_2, R.drawable.img_3);
+        List<Integer> images = new ArrayList<>(originalImages);
+        images.addAll(originalImages); // Nhân đôi danh sách để tạo hiệu ứng lặp
+
         ImagePagerAdapter adapter = new ImagePagerAdapter(images);
         viewPager.setAdapter(adapter);
         handler = new Handler(Looper.getMainLooper());
+
         runnable = new Runnable() {
             @Override
             public void run() {
-                if (currentPage >= images.size()) {
-                    currentPage = 0;
+                if (currentPage >= images.size() / 2) { // Khi đạt đến cuối nửa đầu của danh sách
+                    currentPage = 0; // Đặt lại về ảnh đầu tiên
+                    viewPager.setCurrentItem(currentPage, false); // Đặt lại không có hiệu ứng chuyển tiếp
+                } else {
+                    viewPager.setCurrentItem(currentPage++, true); // Chuyển tiếp ảnh kế tiếp
                 }
-                viewPager.setCurrentItem(currentPage++, true);
-                handler.postDelayed(runnable, 4000);
+                handler.postDelayed(runnable, 3500);
             }
         };
-        handler.postDelayed(runnable, 4000);
+
+        handler.postDelayed(runnable, 3500);
+
         checkUserLoginAndEmailVerification();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String currentUserId = (currentUser != null) ? currentUser.getUid() : null;
@@ -177,26 +185,31 @@ public class ShoppingSiteFragement extends Fragment {
 
     // Tải danh sách sản phẩm từ Firestore
     private void loadProducts() {
-
-        db.collection("Products").get()
+        db.collection("Products")
+                .whereNotEqualTo("status", "Sold") // Điều kiện để loại bỏ sản phẩm có trạng thái là "Sold"
+                .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        // Tạo một Product từ documentSnapshot
-                        for (QueryDocumentSnapshot document : task.getResult()){
+                        productList.clear(); // Xóa danh sách hiện tại để tránh trùng lặp
+                        for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
                             product.setId(document.getId());
                             productList.add(product);
                         }
 
                         if (productList.isEmpty()) {
-                            emptyPost.setVisibility(View.VISIBLE);
-                        }else{
+                            emptyPost.setVisibility(View.VISIBLE); // Hiển thị thông báo khi không có sản phẩm
+                        } else {
                             emptyPost.setVisibility(View.GONE);
                         }
-                        productAdapter.notifyDataSetChanged();
+                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter để hiển thị danh sách sản phẩm
+                    } else {
+                        Log.d("ShoppingSiteFragment", "Lỗi khi tải sản phẩm: ", task.getException());
+                        Toast.makeText(getContext(), "Lỗi khi tải sản phẩm", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
     private void loadCategory(){
 

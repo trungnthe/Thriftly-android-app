@@ -6,7 +6,9 @@
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
-        android:layout_height="128dp"
-        android:src="@drawable/banner" />
+        android:layout_height="138dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/img_1" />
+
 
 </RelativeLayout>

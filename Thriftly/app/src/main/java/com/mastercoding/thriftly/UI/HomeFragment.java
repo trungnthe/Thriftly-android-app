@@ -100,7 +100,6 @@ public class HomeFragment extends Fragment {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         productList.clear(); // Xóa danh sách trước khi thêm mới
-
                         // Lọc và chỉ thêm các sản phẩm của người dùng hiện tại
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
@@ -108,6 +107,8 @@ public class HomeFragment extends Fragment {
 
                             // Chỉ thêm sản phẩm của người dùng hiện tại
                             if (product.getUserId().equals(currentUserId)) {
+                                String status = document.getString("status");
+                                product.setStatus(status);
                                 productList.add(product);
                             }
                         }

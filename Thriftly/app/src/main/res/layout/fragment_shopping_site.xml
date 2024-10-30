@@ -120,7 +120,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="148dp"
         android:text="Posts"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -155,18 +155,21 @@
         app:layout_constraintTop_toTopOf="@id/posts_label"
         app:layout_constraintVertical_bias="1.0" />
 
+    <!-- TextView for "No Product" message -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_products"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="8dp"
         android:scrollbars="vertical"
-        app:layout_constraintTop_toBottomOf="@id/posts_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/posts_label"
+        app:layout_constraintVertical_bias="1.0" />
 
-    <!-- TextView for "No Product" message -->
     <TextView
         android:id="@+id/tvNotFound"
         android:layout_width="wrap_content"
@@ -183,7 +186,7 @@
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="408dp"
-        android:layout_height="116dp"
+        android:layout_height="130dp"
         app:layout_constraintBottom_toTopOf="@+id/posts_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
