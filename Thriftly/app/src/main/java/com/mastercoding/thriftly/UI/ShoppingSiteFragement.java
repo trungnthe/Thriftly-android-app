@@ -247,11 +247,12 @@ public class ShoppingSiteFragement extends Fragment {
 
         db.collection("Products")
                 .whereEqualTo("categoryId", categoryId)
+                .whereEqualTo("status", "Available")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Create a Product object from the Firestore document
+                            // Tạo đối tượng Product từ tài liệu Firestore
                             Product product = document.toObject(Product.class);
                             product.setId(document.getId());
                             productList.add(product);
@@ -259,17 +260,17 @@ public class ShoppingSiteFragement extends Fragment {
 
                         if (productList.isEmpty()) {
                             emptyPost.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             emptyPost.setVisibility(View.GONE);
                         }
 
                         productAdapter.notifyDataSetChanged();
                     } else {
-
                         Toast.makeText(getContext(), "Failed to load products.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
     private void loadProducts(String searchQuery) {
         // Sử dụng để tìm kiếm tất cả sản phẩm và lọc ở client side (tìm kiếm chứa từ khóa)
@@ -304,26 +305,28 @@ public class ShoppingSiteFragement extends Fragment {
 
 
     private void loadPriceUpDown(String searchQuery, boolean checkPrice) {
-        // Sử dụng để tìm kiếm tất cả sản phẩm và lọc ở client side (tìm kiếm chứa từ khóa)
-        Query.Direction query = checkPrice==true ? Query.Direction.DESCENDING : Query.Direction.ASCENDING;
-
         db.collection("Products")
-                .orderBy("price", query)
+                .whereEqualTo("status", "Available")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        productList.clear(); // Xóa danh sách hiện tại để đảm bảo không trùng lặp
+                        productList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
                             product.setId(document.getId());
-                            // Kiểm tra xem tên có chứa từ khóa không (case-insensitive)
                             if (product.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
                                 productList.add(product);
                             }
                         }
-                        productAdapter.notifyDataSetChanged(); // Cập nhật adapter
+                        // Sắp xếp client-side theo giá trị số của price
+                        productList.sort((p1, p2) -> {
+                            int price1 = Integer.parseInt(p1.getPrice());
+                            int price2 = Integer.parseInt(p2.getPrice());
+                            return checkPrice ? Integer.compare(price2, price1) : Integer.compare(price1, price2);
+                        });
+
+                        productAdapter.notifyDataSetChanged();
                     } else {
-                        // Xử lý trường hợp không thành công (ví dụ: hiển thị thông báo lỗi)
                         Log.d("SearchResultsActivity", "Error getting documents: ", task.getException());
                     }
                 });
